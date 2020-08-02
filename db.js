@@ -10,28 +10,28 @@ class Registration {
 }
 
 function addRegistration(classID, email, callback) {
-   var exists = false;
+   callback = callback || function () {};
+
+   //check if missing field
+   if (classID == "" || email == "") {
+      return callback("Missing field");
+	}
+	//TODO: check if email and classID is valid.
 
    for (registration of registrations) {
-		console.log("CHECKING: " + JSON.stringify(registration));
+      //check if already exists
       if (registration.classID == classID && registration.email == email) {
-         exists = true;
-         break;
+         // result = { message: "Registration already exists" };
+         // break;
+         return callback("Registration already exists");
       }
    }
 
-   if (!exists) {
-      registrations.push(new Registration(classID, email));
-   }
+   //add to DB
+   registrations.push(new Registration(classID, email));
 
-   if (typeof callback === "function") {
-      if (!exists) {
-         callback({ result: "successful" });
-      } else {
-         callback({ result: "Registration already exists" });
-      }
-   }
+   callback(null, "success");
 }
 
-exports.registrations = registrations;
-exports.addRegistration = addRegistration;
+module.exports.registrations = registrations;
+module.exports.addRegistration = addRegistration;

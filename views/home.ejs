@@ -1,11 +1,25 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title>Home Page</title>
+		<title>Home Page</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="/assets/javascript.js"></script> 
    </head>
 
    <body>
 		<h1>Welcome to the home page.</h1>
-		<%= data.data %>
+		<% for(registration of data.data) { %>
+		<p><%= registration.email %> wants updates on <%= registration.classID %></p>
+		<% } %>
+
+		<br/>
+		<form id="registrationForm" action="/register" method="POST">
+			<label for="classID">Which class would you like to monitor?</label>
+			<input id="form-classID" name="classID">
+			<br/>
+			<label for="email">Which email address would you like to recieve notifications?</label>
+			<input id="form-email" name="email">
+			<button type="submit" name="submitButton">Submit!</button>
+		</form>
    </body>
 </html>
