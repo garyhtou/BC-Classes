@@ -1,5 +1,11 @@
 //temp before connect to db
 
+//schema example
+var tracking = {
+   Fall2020: ["MATH", "ACCT"], //subject slug
+   Winter2020: ["ROBI", "ACCT&"],
+};
+
 var registrations = [];
 
 class Registration {
@@ -15,8 +21,8 @@ function addRegistration(classID, email, callback) {
    //check if missing field
    if (classID == "" || email == "") {
       return callback("Missing field");
-	}
-	//TODO: check if email and classID is valid.
+   }
+   //TODO: check if email and classID is valid.
 
    for (registration of registrations) {
       //check if already exists

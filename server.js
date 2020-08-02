@@ -1,7 +1,7 @@
 var express = require("express");
 var routes = require("./routes");
 var bodyParser = require("body-parser");
-var db = require("./db");
+var firebase = require("./firebase");
 
 // Set Up
 var app = express();
@@ -13,7 +13,7 @@ app.use("/assets", express.static(__dirname + "/assets"));
 app.use("/", routes);
 
 //DB for testing
-db.addRegistration("asdf", "garytou2@gmail.com");
+firebase.addRegistration("asdf", "garytou2@gmail.com");
 
 // BC-API
 var bcAPI = require("./bcAPI");
