@@ -129,12 +129,16 @@ function getSubject(quarterSlug, subjectSlug, callback) {
       "/" +
       subjectSlug +
       "?format=json";
-   request(url, { json: true }, (err, res, body) => {
+   request(url, { "content-type": "text/plain" }, (err, res, body) => {
       if (err) {
          console.log("ERROR: GET " + url + "\n" + err);
          return callback(err);
       }
-      var courses = body.Courses;
+      // remove duplicate "ID" key >:(
+      var json = JSON.parse(
+         body.replace('"ID":null,"CourseSubject"', '"CourseSubject"')
+      );
+      var courses = json.Courses;
 
       console.log("\ngot " + quarterSlug + " " + subjectSlug + "\n");
       callback(null, courses);
