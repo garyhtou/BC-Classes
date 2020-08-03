@@ -25,6 +25,6 @@ if (!process.env.FIREBASE_WEB_CONFIG) {
 }
 
 // Start app!
-app.listen(3000, () => {
-   console.log("listening on port 3000");
+app.listen(80, () => {
+   console.log("listening on port 80");
 });

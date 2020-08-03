@@ -34,6 +34,8 @@ routes.get("/login", function (req, res) {
 });
 
 routes.all("*", function (req, res) {
+   var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+   console.log("Hit - " + fullUrl);
    res.redirect("/");
 });
 
