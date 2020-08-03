@@ -2,9 +2,8 @@
 var admin = require("firebase-admin");
 admin.initializeApp({
    credential: admin.credential.applicationDefault(),
+   databaseURL: "https://bc-classes.firebaseio.com",
 });
-
-var auth = admin.auth();
 
 //schema example
 var tracking = {
@@ -21,7 +20,7 @@ class Registration {
    }
 }
 
-function addRegistration(classID, email, callback) {
+function addRegistration(idToken, classID, email, callback) {
    callback = callback || function () {};
 
    //check if missing field
@@ -40,6 +39,18 @@ function addRegistration(classID, email, callback) {
    }
 
    //add to DB
+   var postKey = admin
+      .database()
+      .ref("users/" + idToken.uid)
+      .push().key;
+   admin
+      .database()
+      .ref("users/" + idToken.uid + "/" + postKey)
+      .update({
+         classID: classID,
+         email: email,
+      });
+
    registrations.push(new Registration(classID, email));
 
    callback(null, "success");

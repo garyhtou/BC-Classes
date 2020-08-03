@@ -18,7 +18,7 @@ routes.post("/register", validateAuth, function (req, res) {
    var idToken = req.currentUser;
    console.log("\n\nVALID idToken: " + JSON.stringify(idToken) + "\n\n");
 
-   fbAdmin.addRegistration(req.body.classID, req.body.email, (err, data) => {
+   fbAdmin.addRegistration(idToken, req.body.classID, req.body.email, (err, data) => {
       if (err) {
          res.status(400).send(err);
          console.log(err);

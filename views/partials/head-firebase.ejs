@@ -2,6 +2,7 @@
 <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js"></script>
 
 <!-- FirebaseUI -->
 <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
@@ -12,27 +13,36 @@
 />
 
 <script>
-   var firebaseConfig = <%- process.env.FIREBASE_WEB_CONFIG %>;
-   // Initialize Firebase
+     var firebaseConfig = <%- process.env.FIREBASE_WEB_CONFIG %>;
+     // Initialize Firebase
    firebase.initializeApp(firebaseConfig);
-   firebase.analytics();
-   firebase.auth();
+     firebase.analytics();
+     firebase.auth();
 
-   firebase.auth().onAuthStateChanged(function (user) {
-      if (user) {
-         // User is signed in.
-         var displayName = user.displayName;
-         var email = user.email;
-         var emailVerified = user.emailVerified;
-         var photoURL = user.photoURL;
-         var isAnonymous = user.isAnonymous;
-         var uid = user.uid;
-         var providerData = user.providerData;
+     firebase.auth().onAuthStateChanged(function (user) {
+     	if (user) {
+     		// User is signed in.
+     		var displayName = user.displayName;
+     		var email = user.email;
+     		var emailVerified = user.emailVerified;
+     		var photoURL = user.photoURL;
+     		var isAnonymous = user.isAnonymous;
+     		var uid = user.uid;
+     		var providerData = user.providerData;
 
-         $("#displayName").text(displayName);
-      } else {
-         // User is signed out.
-         $("#displayName").text("Signed out");
-      }
-   });
+     		$("#displayName").text(displayName);
+
+     		firebase
+     			.database()
+     			.ref("/users/" + uid)
+     			.once("value")
+     			.then(function (snapshot) {
+     				console.log(JSON.stringify(snapshot));
+     				$("#fbData").text(JSON.stringify(snapshot.val()));
+     			});
+     	} else {
+     		// User is signed out.
+     		$("#displayName").text("Signed out");
+     	}
+     });
 </script>
