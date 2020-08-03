@@ -8,7 +8,7 @@ var fbAdmin = require("./fbAdmin");
 var app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.json());
-app.use("/assets", express.static(__dirname + "/assets"));
+app.use("/", express.static(__dirname + "/public"));
 
 // Router
 app.use("/", routes);

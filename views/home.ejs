@@ -2,15 +2,14 @@
 <html>
    <head>
       <title>Home Page</title>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-      <%- include('partials/firebase.ejs') %>
-      <script src="/assets/home.js"></script>
-
+      <%- include('partials/head.ejs') %> <%-
+      include('partials/head-firebase.ejs') %>
+      <script src="/js/home.js"></script>
    </head>
 
    <body>
-		<h1>Welcome to the home page.</h1>
-		<h2 id="displayName">guest</h2>
+      <h1>Welcome to the home page.</h1>
+      <h2 id="displayName">guest</h2>
 
       <% for(registration of data.data) { %>
       <p>
