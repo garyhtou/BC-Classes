@@ -14,7 +14,7 @@ var publicMethods = {
 // SCHEDULE
 var scheduleMethods = [
    [getQuarters, "0 0 */12 * * *"],
-   [getClasses, "0 */15 * * * *"],
+   // [getClasses, "0 */15 * * * *"], TEMP DISABLE
 ];
 var x = 0;
 var loopScheduler = function (arr) {
@@ -83,6 +83,7 @@ function getClasses(callback) {
 
          var subjects = body.ViewingSubjects;
          for (subject of subjects) {
+            //if key for current subject exists in Tracker, save it. (this will cause it to only save tracked subjects)
             data.classes.quarters[quarterSlug][subject.Slug] = subject;
          }
          var subjectSlugs = Object.keys(data.classes.quarters[quarterSlug]);
@@ -135,6 +136,7 @@ function getSubject(quarterSlug, subjectSlug, callback) {
          return callback(err);
       }
       // remove duplicate "ID" key >:(
+		// potential cause?: https://github.com/BellevueCollege/ClassSchedule/blob/83805ce9dea840c8a2e85cc8cd7a30d54125d436/ClassSchedule.Web/Models/SectionWithSeats.cs#L17
       var json = JSON.parse(
          body.replace('"ID":null,"CourseSubject"', '"CourseSubject"')
       );

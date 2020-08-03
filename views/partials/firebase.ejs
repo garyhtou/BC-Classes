@@ -1,0 +1,38 @@
+<!-- Firebase JS SDK -->
+<script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-analytics.js"></script>
+
+<!-- FirebaseUI -->
+<script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+<link
+   type="text/css"
+   rel="stylesheet"
+   href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css"
+/>
+
+<script>
+   var firebaseConfig = <%- process.env.FIREBASE_WEB_CONFIG %>;
+   // Initialize Firebase
+   firebase.initializeApp(firebaseConfig);
+   firebase.analytics();
+   firebase.auth();
+
+   firebase.auth().onAuthStateChanged(function (user) {
+      if (user) {
+         // User is signed in.
+         var displayName = user.displayName;
+         var email = user.email;
+         var emailVerified = user.emailVerified;
+         var photoURL = user.photoURL;
+         var isAnonymous = user.isAnonymous;
+         var uid = user.uid;
+         var providerData = user.providerData;
+
+         $("#displayName").text(displayName);
+      } else {
+         // User is signed out.
+         $("#displayName").text("Signed out");
+      }
+   });
+</script>

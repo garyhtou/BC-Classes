@@ -1,4 +1,10 @@
-//temp before connect to db
+// Firebase Admin SDK
+var admin = require("firebase-admin");
+admin.initializeApp({
+   credential: admin.credential.applicationDefault(),
+});
+
+var auth = admin.auth();
 
 //schema example
 var tracking = {
@@ -39,5 +45,6 @@ function addRegistration(classID, email, callback) {
    callback(null, "success");
 }
 
+module.exports.admin = admin;
 module.exports.registrations = registrations;
 module.exports.addRegistration = addRegistration;
