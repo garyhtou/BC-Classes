@@ -33,6 +33,10 @@ routes.get("/login", function (req, res) {
    res.render("login");
 });
 
+routes.all("*", function (req, res) {
+   res.redirect("/");
+});
+
 // MIDDLEWARE --------------------------------
 
 function validateAuth(req, res, next) {
