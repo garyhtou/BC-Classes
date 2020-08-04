@@ -7,7 +7,7 @@ if (!process.env.FIREBASE_WEB_CONFIG) {
 var express = require("express");
 var routes = require("./routes");
 var bodyParser = require("body-parser");
-var fbAdmin = require("./fbAdmin");
+var fbAdmin = require("./utils/fbAdmin");
 
 // Set Up
 var app = express();
@@ -22,7 +22,7 @@ app.use("/", routes);
 //fbAdmin.addRegistration("asdf", "garytou2@gmail.com");
 
 // BC-API
-var bcAPI = require("./bcAPI");
+var bcAPI = require("./utils/bcAPI");
 
 // Start app!
 app.listen(80, () => {

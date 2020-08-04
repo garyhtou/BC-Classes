@@ -14,7 +14,7 @@ var publicMethods = {
 // SCHEDULE
 var scheduleMethods = [
    [getQuarters, "0 0 */12 * * *"],
-   // [getClasses, "0 */15 * * * *"], TEMP DISABLE
+   [getClasses, "0 */15 * * * *"],
 ];
 var x = 0;
 var loopScheduler = function (arr) {
@@ -99,7 +99,7 @@ function getClasses(callback) {
 
                data.classes.quarters[quarterSlug][
                   subjectSlug
-               ].courses = courses;
+               ].Courses = courses;
 
                loopSubjectCounter++;
                if (loopSubjectCounter < subjectSlugs.length) {
@@ -136,11 +136,27 @@ function getSubject(quarterSlug, subjectSlug, callback) {
          return callback(err);
       }
       // remove duplicate "ID" key >:(
-		// potential cause?: https://github.com/BellevueCollege/ClassSchedule/blob/83805ce9dea840c8a2e85cc8cd7a30d54125d436/ClassSchedule.Web/Models/SectionWithSeats.cs#L17
-      var json = JSON.parse(
-         body.replace('"ID":null,"CourseSubject"', '"CourseSubject"')
-      );
-      var courses = json.Courses;
+      // potential cause?: https://github.com/BellevueCollege/ClassSchedule/blob/83805ce9dea840c8a2e85cc8cd7a30d54125d436/ClassSchedule.Web/Models/SectionWithSeats.cs#L17
+      var raw = body.toString().replace(/"ID":null,/g, "");
+      var json = JSON.parse(raw);
+      var rawSubject = json.Courses;
+
+      // process data
+      var courses = {};
+      for (rawCourse of rawSubject) {
+         var course = {};
+
+         course.CourseID = rawCourse.Sections[0].CourseID;
+         course.CourseTitle = rawCourse.Sections[0].CourseTitle;
+
+         course.Sections = {};
+         for (section of rawCourse.Sections) {
+            course.Sections[section.ID.ItemNumber] = section;
+         }
+
+         // add to list of courses
+         courses[course.CourseID] = course;
+      }
 
       console.log("\ngot " + quarterSlug + " " + subjectSlug + "\n");
       callback(null, courses);

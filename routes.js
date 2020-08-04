@@ -1,5 +1,5 @@
 var routes = require("express").Router();
-var fbAdmin = require("./fbAdmin");
+var fbAdmin = require("./utils/fbAdmin");
 
 routes.get("/", function (req, res) {
    var data = {
@@ -10,7 +10,7 @@ routes.get("/", function (req, res) {
 });
 
 routes.get("/data", function (req, res) {
-   var bcAPI = require("./bcAPI");
+   var bcAPI = require("./utils/bcAPI");
    res.json(bcAPI.data);
 });
 
