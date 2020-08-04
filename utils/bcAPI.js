@@ -5,6 +5,13 @@ var data = {
    quarters: {},
    classes: {},
 };
+var oldData = {
+   quarters: {},
+   classes: {},
+};
+
+// TESTING ONLY!!!!!!
+// data.classes = require("../temp");
 
 var publicMethods = {
    getQuarters,
@@ -14,24 +21,29 @@ var publicMethods = {
 // SCHEDULE
 var scheduleMethods = [
    [getQuarters, "0 0 */12 * * *"],
-   [getClasses, "0 */15 * * * *"],
+   [getClasses, "0 0 * * * *"],
+   [getAllSeats, "0 0 0 * * *"],
 ];
-var x = 0;
+var loopSchedulerCounter = 0;
 var loopScheduler = function (arr) {
    //run method
-   arr[x][0](() => {
+   arr[loopSchedulerCounter][0](() => {
       //when done,schedule it
-      if (cron.validate(arr[x][1])) {
+      if (cron.validate(arr[loopSchedulerCounter][1])) {
          var script =
-            'cron.schedule("' + arr[x][1] + '", ' + arr[x][0] + ").start();";
+            'cron.schedule("' +
+            arr[loopSchedulerCounter][1] +
+            '", ' +
+            arr[loopSchedulerCounter][0] +
+            ").start();";
          eval(script);
       } else {
-         throw new Error("Invalid cron for " + arr[x][0]);
+         throw new Error("Invalid cron for " + arr[loopSchedulerCounter][0]);
       }
 
       //next method
-      x++;
-      if (x < arr.length) {
+      loopSchedulerCounter++;
+      if (loopSchedulerCounter < arr.length) {
          loopScheduler(arr);
       }
    });
@@ -49,6 +61,7 @@ function getQuarters(callback) {
          console.log("ERROR: GET " + url + "\n" + err);
          return callback(err);
       }
+      oldData.quarters = data.quarters;
       data.quarters = body.NavigationQuarters;
       console.log("got quarters\n" + JSON.stringify(data.quarters));
       callback(null, data.quarters);
@@ -60,12 +73,14 @@ function getClasses(callback) {
 
    console.log("getting classes");
 
-   data.classes.quarters = {};
+   oldData.classes = data.classes;
+
+   var quarters = {};
 
    // get quarter slugs
    data.quarters.map((quarter) => {
       var slug = new String(quarter.FriendlyName).replace(/ /g, "");
-      data.classes.quarters[slug] = {};
+      quarters[slug] = {};
    });
 
    // get subjects per quarter. using function instead of for loops to be synchronous
@@ -84,9 +99,9 @@ function getClasses(callback) {
          var subjects = body.ViewingSubjects;
          for (subject of subjects) {
             //if key for current subject exists in Tracker, save it. (this will cause it to only save tracked subjects)
-            data.classes.quarters[quarterSlug][subject.Slug] = subject;
+            quarters[quarterSlug][subject.Slug] = subject;
          }
-         var subjectSlugs = Object.keys(data.classes.quarters[quarterSlug]);
+         var subjectSlugs = Object.keys(quarters[quarterSlug]);
 
          var loopSubjectCounter = 0;
          var loopSubjects = function (quarterSlug, subjectSlugs) {
@@ -97,9 +112,10 @@ function getClasses(callback) {
                   console.log("ERROR: GET " + url + "\n" + err);
                }
 
-               data.classes.quarters[quarterSlug][
-                  subjectSlug
-               ].Courses = courses;
+               quarters[quarterSlug][subjectSlug].Courses = courses;
+
+               // Save data!
+               data.classes.quarters = quarters;
 
                loopSubjectCounter++;
                if (loopSubjectCounter < subjectSlugs.length) {
@@ -110,6 +126,9 @@ function getClasses(callback) {
                      loopQuarters(quarterSlugs);
                   } else {
                      //console.log(JSON.stringify(data.classes));
+
+                     // not necessary, but make sure everything's save before call back
+                     data.classes.quarters = quarters;
                      callback(null, data.classes);
                   }
                }
@@ -118,7 +137,7 @@ function getClasses(callback) {
          loopSubjects(quarterSlug, subjectSlugs);
       });
    };
-   loopQuarters(Object.keys(data.classes.quarters));
+   loopQuarters(Object.keys(quarters));
 }
 
 function getSubject(quarterSlug, subjectSlug, callback) {
@@ -161,6 +180,67 @@ function getSubject(quarterSlug, subjectSlug, callback) {
       console.log("\ngot " + quarterSlug + " " + subjectSlug + "\n");
       callback(null, courses);
    });
+}
+
+function updateSeats(ItemNumber, quarterID, callback) {
+   callback = callback || function () {};
+
+   var url = "https://www2.bellevuecollege.edu/classes/Api/GetSeats";
+   var classID = { classID: ItemNumber + quarterID };
+   request.post({ url: url, json: classID }, function (err, response, body) {
+      if (err) {
+         console.log(err);
+         return callback(err);
+      }
+      var seats = parseInt(body.split("|")[0]);
+      console.log(
+         "Seats for " + ItemNumber + " of " + quarterID + ": " + seats
+      );
+      callback(null, seats);
+   });
+}
+
+function getAllSeats(callback) {
+   var queue = [];
+
+   for (quarter in data.classes.quarters) {
+      var quarterObject = data.classes.quarters[quarter];
+      for (subject in quarterObject) {
+         var subjectObject = quarterObject[subject];
+         for (courses in subjectObject.Courses) {
+            var sectionObject = subjectObject.Courses[courses].Sections;
+            for (section in sectionObject) {
+               var indivSectionObject = sectionObject[section];
+
+               // synchronous
+               queue.push([
+                  indivSectionObject.ID.ItemNumber,
+                  indivSectionObject.ID.YearQuarter,
+               ]);
+
+               // asynchronous
+               // updateSeats(section.ID.ItemNumber, section.ID.YearQuarter);
+            }
+         }
+      }
+   }
+
+   var loopSeatsCounter = 0;
+   var loopSeats = function (classes) {
+      updateSeats(
+         classes[loopSeatsCounter][0],
+         classes[loopSeatsCounter][1],
+         function () {
+            loopSeatsCounter++;
+            if (loopSeatsCounter < classes.length) {
+               loopSeats(classes);
+            } else {
+               callback();
+            }
+         }
+      );
+   };
+   loopSeats(queue);
 }
 
 // get data without updating
