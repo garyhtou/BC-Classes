@@ -14,6 +14,11 @@ routes.get("/data", function (req, res) {
    res.json(bcAPI.data);
 });
 
+routes.get("/olddata", function (req, res) {
+   var bcAPI = require("./utils/bcAPI");
+   res.json(bcAPI.oldData);
+});
+
 routes.post("/register", validateAuth, function (req, res) {
    var idToken = req.currentUser;
    console.log("\n\nVALID idToken: " + JSON.stringify(idToken) + "\n\n");

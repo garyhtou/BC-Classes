@@ -21,8 +21,8 @@ app.use("/", routes);
 //DB for testing
 //fbAdmin.addRegistration("asdf", "garytou2@gmail.com");
 
-// BC-API
-var bcAPI = require("./utils/bcAPI");
+// tracker
+var track = require("./track");
 
 // Start app!
 app.listen(80, () => {

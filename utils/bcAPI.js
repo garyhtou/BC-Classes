@@ -1,9 +1,8 @@
-var cron = require("node-cron");
 var request = require("request");
 
 var data = {
    quarters: {},
-   classes: {},
+   classes: { quarters: {} },
 };
 var oldData = {
    quarters: {},
@@ -11,44 +10,15 @@ var oldData = {
 };
 
 // TESTING ONLY!!!!!!
-// data.classes = require("../temp");
+data.classes = require("../temp").data1;
+oldData.classes = require("../temp").data2;
 
 var publicMethods = {
    getQuarters,
    getClasses,
+   getSeats,
+   getAllSeats,
 };
-
-// SCHEDULE
-var scheduleMethods = [
-   [getQuarters, "0 0 */12 * * *"],
-   [getClasses, "0 0 * * * *"],
-   [getAllSeats, "0 0 0 * * *"],
-];
-var loopSchedulerCounter = 0;
-var loopScheduler = function (arr) {
-   //run method
-   arr[loopSchedulerCounter][0](() => {
-      //when done,schedule it
-      if (cron.validate(arr[loopSchedulerCounter][1])) {
-         var script =
-            'cron.schedule("' +
-            arr[loopSchedulerCounter][1] +
-            '", ' +
-            arr[loopSchedulerCounter][0] +
-            ").start();";
-         eval(script);
-      } else {
-         throw new Error("Invalid cron for " + arr[loopSchedulerCounter][0]);
-      }
-
-      //next method
-      loopSchedulerCounter++;
-      if (loopSchedulerCounter < arr.length) {
-         loopScheduler(arr);
-      }
-   });
-};
-loopScheduler(scheduleMethods);
 
 // METHODS ---------------------------
 
@@ -62,7 +32,12 @@ function getQuarters(callback) {
          return callback(err);
       }
       oldData.quarters = data.quarters;
-      data.quarters = body.NavigationQuarters;
+
+      body.NavigationQuarters.map((quarter) => {
+         var slug = new String(quarter.FriendlyName).replace(/ /g, "");
+         data.quarters[slug] = quarter;
+      });
+
       console.log("got quarters\n" + JSON.stringify(data.quarters));
       callback(null, data.quarters);
    });
@@ -78,9 +53,8 @@ function getClasses(callback) {
    var quarters = {};
 
    // get quarter slugs
-   data.quarters.map((quarter) => {
-      var slug = new String(quarter.FriendlyName).replace(/ /g, "");
-      quarters[slug] = {};
+   Object.keys(data.quarters).map((quarter) => {
+      quarters[quarter] = {};
    });
 
    // get subjects per quarter. using function instead of for loops to be synchronous
@@ -98,7 +72,6 @@ function getClasses(callback) {
 
          var subjects = body.ViewingSubjects;
          for (subject of subjects) {
-            //if key for current subject exists in Tracker, save it. (this will cause it to only save tracked subjects)
             quarters[quarterSlug][subject.Slug] = subject;
          }
          var subjectSlugs = Object.keys(quarters[quarterSlug]);
@@ -115,7 +88,7 @@ function getClasses(callback) {
                quarters[quarterSlug][subjectSlug].Courses = courses;
 
                // Save data!
-               data.classes.quarters = quarters;
+               data.classes.quarters[quarterSlug] = quarters[quarterSlug];
 
                loopSubjectCounter++;
                if (loopSubjectCounter < subjectSlugs.length) {
@@ -182,7 +155,7 @@ function getSubject(quarterSlug, subjectSlug, callback) {
    });
 }
 
-function updateSeats(ItemNumber, quarterID, callback) {
+function getSeats(ItemNumber, quarterID, callback) {
    callback = callback || function () {};
 
    var url = "https://www2.bellevuecollege.edu/classes/Api/GetSeats";
@@ -227,7 +200,7 @@ function getAllSeats(callback) {
 
    var loopSeatsCounter = 0;
    var loopSeats = function (classes) {
-      updateSeats(
+      getSeats(
          classes[loopSeatsCounter][0],
          classes[loopSeatsCounter][1],
          function () {
@@ -245,6 +218,7 @@ function getAllSeats(callback) {
 
 // get data without updating
 module.exports.data = data;
+module.exports.oldData = oldData;
 
 // update then get data
 module.exports.methods = publicMethods;
