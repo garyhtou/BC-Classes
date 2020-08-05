@@ -41,7 +41,7 @@ function addRegistration(idToken, classID, email, callback) {
    //add to DB
    var postKey = admin
       .database()
-      .ref("users/" + idToken.uid)
+      .ref("registrations/" + idToken.uid)
       .push().key;
    admin
       .database()
@@ -56,6 +56,19 @@ function addRegistration(idToken, classID, email, callback) {
    callback(null, "success");
 }
 
-module.exports.admin = admin;
-module.exports.registrations = registrations;
+function getRegistrations() {
+   //TODO: connect to firebase
+   return registrations;
+}
+
+function addChanges(changes) {
+   var data = {};
+   data.time = admin.database.ServerValue.TIMESTAMP;
+   data.changes = changes;
+
+   admin.database().ref("changes/").push(data);
+}
+
+module.exports.getRegistrations = getRegistrations;
 module.exports.addRegistration = addRegistration;
+module.exports.addChanges = addChanges;

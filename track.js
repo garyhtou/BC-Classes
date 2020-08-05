@@ -1,11 +1,12 @@
 var cron = require("node-cron");
+var fbAdmin = require("./utils/fbAdmin");
 var bcAPI = require("./utils/bcAPI");
 
 // SCHEDULE
 var scheduleMethods = [
-   [bcAPI.methods.getQuarters, "0 0 */12 * * *"],
+   [bcAPI.update.updateQuarters, "0 0 */12 * * *"],
    [findChanges, "0 0 * * * *"],
-   [bcAPI.methods.getAllSeats, "0 0 0 * * *"],
+   [bcAPI.update.updateAllSeats, "0 0 4 * * *"],
 ];
 var loopSchedulerCounter = 0;
 var loopScheduler = function (arr) {
@@ -18,7 +19,7 @@ var loopScheduler = function (arr) {
             arr[loopSchedulerCounter][1] +
             '", ' +
             arr[loopSchedulerCounter][0] +
-            ").start();";
+            ", {timezone: 'America/Los_Angeles'}).start();";
          eval(script);
       } else {
          throw new Error("Invalid cron for " + arr[loopSchedulerCounter][0]);
@@ -39,7 +40,14 @@ const actionAdded = "added";
 const actionRemoved = "removed";
 const actionChanged = "changed";
 
-var changes = {};
+var changes = {
+   quarters: [],
+   subjects: [],
+   courses: [],
+   sections: [],
+   instructor: [],
+   seats: [],
+};
 var oldChanges = {};
 
 function findChanges(callback) {
@@ -57,10 +65,10 @@ function findChanges(callback) {
       seats: [], //change ["change", [new, old], [quarter, subject, course, section] ] Ex. ["remove", "4001", ["Fall 2020", "ACCT", "ACCT 101", "4001"]]
    };
 
-   bcAPI.methods.getClasses(() => {
+   bcAPI.update.updateClasses(() => {
       console.log("Finding Changes");
-      var newData = bcAPI.data;
-      var oldData = bcAPI.oldData;
+      var newData = bcAPI.getData();
+      var oldData = bcAPI.getOldData();
 
       // compare quarters
       newChanges.quarters = compareQuarters(newData, oldData, []);
@@ -115,8 +123,11 @@ function findChanges(callback) {
 
       oldChanges = changes;
       changes = newChanges;
-		console.log("DONE finding changes");
-		callback(null, changes);
+
+      fbAdmin.addChanges(changes);
+      console.log("DONE finding changes");
+
+      callback(null, changes);
    });
 
    // HELPER METHODS ---------------------------
@@ -351,5 +362,9 @@ function findChanges(callback) {
 
 function notifyChanges() {}
 
-module.exports.changes = changes;
-module.exports.oldChanges = oldChanges;
+module.exports.getChanges = (function () {
+   return changes;
+})();
+module.exports.getOldChanges = function () {
+   return oldChanges;
+};

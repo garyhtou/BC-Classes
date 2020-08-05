@@ -5,27 +5,27 @@ var bcAPI = require("./utils/bcAPI");
 var track = require("./track");
 
 routes.get("/", function (req, res) {
-   var data = {
-      data: fbAdmin.registrations,
+	var data = {
+		data: fbAdmin.getRegistrations(),
    };
-
+	
    res.render("home", { data: data });
 });
 
 routes.get("/data", function (req, res) {
-   res.json(bcAPI.data);
+	res.json(bcAPI.getData());
 });
 
 routes.get("/olddata", function (req, res) {
-   res.json(bcAPI.oldData);
+	res.json(bcAPI.getOldData());
 });
 
 routes.get("/changes", function (req, res) {
-   res.json(track.changes);
+   res.json(track.getChanges());
 });
 
 routes.get("/oldchanges", function (req, res) {
-   res.json(track.oldChanges);
+   res.json(track.getOldChanges());
 });
 
 routes.post("/register", validateAuth, function (req, res) {

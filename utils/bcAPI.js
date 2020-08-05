@@ -13,13 +13,6 @@ var oldData = {
 // data.classes = require("../temp").data1;
 // oldData.classes = require("../temp").data2;
 
-var publicMethods = {
-   getQuarters,
-   getClasses,
-   getSeats,
-   getAllSeats,
-};
-
 // METHODS ---------------------------
 
 function getQuarters(callback) {
@@ -151,18 +144,19 @@ function getSubject(quarterSlug, subjectSlug, callback) {
             for (section of rawCourse.Sections) {
                course.Sections[section.ID.ItemNumber] = section;
             }
-				
+
             // add to list of courses
-				courses[course.CourseID] = course;
+            courses[course.CourseID] = course;
          } else {
+            //if course already exists, add sections to existing course
             var existingSections =
-				courses[rawCourse.Sections[0].CourseID].Sections;
+               courses[rawCourse.Sections[0].CourseID].Sections;
 
             for (newSection in rawCourse.Sections) {
-					var ItemNumber = rawCourse.Sections[newSection].ID.ItemNumber;
-					existingSections[ItemNumber] = rawCourse.Sections[newSection];
+               var ItemNumber = rawCourse.Sections[newSection].ID.ItemNumber;
+               existingSections[ItemNumber] = rawCourse.Sections[newSection];
             }
-			}
+         }
       }
 
       console.log("\ngot " + quarterSlug + " " + subjectSlug + "\n");
@@ -201,10 +195,12 @@ function getAllSeats(callback) {
                var indivSectionObject = sectionObject[section];
 
                // synchronous
-               queue.push([
-                  indivSectionObject.ID.ItemNumber,
-                  indivSectionObject.ID.YearQuarter,
-               ]);
+               try {
+                  queue.push([
+                     indivSectionObject.ID.ItemNumber,
+                     indivSectionObject.ID.YearQuarter,
+                  ]);
+               } catch (e) {}
 
                // asynchronous
                // updateSeats(section.ID.ItemNumber, section.ID.YearQuarter);
@@ -232,8 +228,19 @@ function getAllSeats(callback) {
 }
 
 // get data without updating
-module.exports.data = data;
-module.exports.oldData = oldData;
+module.exports.getData = () => {
+   return data;
+};
+module.exports.getOldData = () => {
+   return oldData;
+};
 
 // update then get data
-module.exports.methods = publicMethods;
+var publicMethods = {
+   updateQuarters: getQuarters,
+   updateClasses: getClasses,
+   updateSeats: getSeats,
+   updateAllSeats: getAllSeats,
+};
+
+module.exports.update = publicMethods;
