@@ -36,6 +36,9 @@ function getQuarters(callback) {
       body.NavigationQuarters.map((quarter) => {
          var slug = new String(quarter.FriendlyName).replace(/ /g, "");
          data.quarters[slug] = quarter;
+         if (!data.classes.quarters.hasOwnProperty(slug)) {
+            data.classes.quarters[slug] = {};
+         }
       });
 
       console.log("got quarters\n" + JSON.stringify(data.quarters));
@@ -88,7 +91,8 @@ function getClasses(callback) {
                quarters[quarterSlug][subjectSlug].Courses = courses;
 
                // Save data!
-               data.classes.quarters[quarterSlug] = quarters[quarterSlug];
+               data.classes.quarters[quarterSlug][subjectSlug] =
+                  quarters[quarterSlug][subjectSlug];
 
                loopSubjectCounter++;
                if (loopSubjectCounter < subjectSlugs.length) {
@@ -136,18 +140,29 @@ function getSubject(quarterSlug, subjectSlug, callback) {
       // process data
       var courses = {};
       for (rawCourse of rawSubject) {
-         var course = {};
+         // if course doesn't already exist
+         if (courses[rawCourse.Sections[0].CourseID] == undefined) {
+            var course = {};
 
-         course.CourseID = rawCourse.Sections[0].CourseID;
-         course.CourseTitle = rawCourse.Sections[0].CourseTitle;
+            course.CourseID = rawCourse.Sections[0].CourseID;
+            course.CourseTitle = rawCourse.Sections[0].CourseTitle;
 
-         course.Sections = {};
-         for (section of rawCourse.Sections) {
-            course.Sections[section.ID.ItemNumber] = section;
-         }
+            course.Sections = {};
+            for (section of rawCourse.Sections) {
+               course.Sections[section.ID.ItemNumber] = section;
+            }
+				
+            // add to list of courses
+				courses[course.CourseID] = course;
+         } else {
+            var existingSections =
+				courses[rawCourse.Sections[0].CourseID].Sections;
 
-         // add to list of courses
-         courses[course.CourseID] = course;
+            for (newSection in rawCourse.Sections) {
+					var ItemNumber = rawCourse.Sections[newSection].ID.ItemNumber;
+					existingSections[ItemNumber] = rawCourse.Sections[newSection];
+            }
+			}
       }
 
       console.log("\ngot " + quarterSlug + " " + subjectSlug + "\n");

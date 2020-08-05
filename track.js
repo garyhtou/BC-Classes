@@ -58,7 +58,7 @@ function findChanges(callback) {
    };
 
    bcAPI.methods.getClasses(() => {
-      console.log("start");
+      console.log("Finding Changes");
       var newData = bcAPI.data;
       var oldData = bcAPI.oldData;
 
@@ -115,7 +115,7 @@ function findChanges(callback) {
 
       oldChanges = changes;
       changes = newChanges;
-		console.log("end");
+		console.log("DONE finding changes");
 		callback(null, changes);
    });
 
