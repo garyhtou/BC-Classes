@@ -1,6 +1,9 @@
 var routes = require("express").Router();
 var fbAdmin = require("./utils/fbAdmin");
 
+var bcAPI = require("./utils/bcAPI");
+var track = require("./track");
+
 routes.get("/", function (req, res) {
    var data = {
       data: fbAdmin.registrations,
@@ -10,13 +13,19 @@ routes.get("/", function (req, res) {
 });
 
 routes.get("/data", function (req, res) {
-   var bcAPI = require("./utils/bcAPI");
    res.json(bcAPI.data);
 });
 
 routes.get("/olddata", function (req, res) {
-   var bcAPI = require("./utils/bcAPI");
    res.json(bcAPI.oldData);
+});
+
+routes.get("/changes", function (req, res) {
+   res.json(track.changes);
+});
+
+routes.get("/oldchanges", function (req, res) {
+   res.json(track.oldChanges);
 });
 
 routes.post("/register", validateAuth, function (req, res) {
