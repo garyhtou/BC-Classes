@@ -48,7 +48,8 @@ var changes = {
    instructor: [],
    seats: [],
 };
-var oldChanges = {};
+
+var changeHistory = {};
 
 function findChanges(callback) {
    callback = callback || function () {};
@@ -121,7 +122,6 @@ function findChanges(callback) {
          }
       }
 
-      oldChanges = changes;
       changes = newChanges;
 
       fbAdmin.addChanges(changes);
@@ -362,9 +362,20 @@ function findChanges(callback) {
 
 function notifyChanges() {}
 
-module.exports.getChanges = (function () {
+//get change history
+function updateChangeHistory() {
+   fbAdmin.admin
+      .database()
+      .ref("changes")
+      .on("value", (snapshot) => {
+         changeHistory = snapshot.val();
+      });
+}
+updateChangeHistory();
+
+module.exports.getChanges = function () {
    return changes;
-})();
-module.exports.getOldChanges = function () {
-   return oldChanges;
+};
+module.exports.getChangeHistory = function () {
+   return changeHistory;
 };

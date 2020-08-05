@@ -34,7 +34,7 @@
 
      		firebase
      			.database()
-     			.ref("/users/" + uid)
+     			.ref("/registrations/" + uid)
      			.once("value")
      			.then(function (snapshot) {
      				console.log(JSON.stringify(snapshot));

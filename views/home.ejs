@@ -11,28 +11,41 @@
       <h1>Welcome to the home page.</h1>
       <h2 id="displayName">guest</h2>
 
-      <% for(registration of data.data) { %>
-      <p>
-         <%= registration.email %> wants updates on <%= registration.classID %>
-      </p>
-      <% } %>
+		<% for(user in registrations) { %>
+			<% for(registration in registrations[user]) { %>
+				<p>
+					<%= JSON.stringify(registration); %>
+				</p>
+			<% } %>
+		<% } %>
 
       <br />
       <form id="registrationForm" action="/register" method="POST">
-         <label for="classID">Which class would you like to monitor?</label>
-         <input id="form-classID" name="classID" />
+         <label for="quarter">Quarter</label>
+         <input id="form-quarter" name="quarter" />
          <br />
-         <label for="email"
-            >Which email address would you like to recieve notifications?</label
-         >
-         <input id="form-email" name="email" />
+         <label for="subject">Subject</label>
+         <input id="form-subject" name="subject" />
+         <br />
+         <label for="course">Course</label>
+         <input id="form-course" name="course" />
+         <br />
+         <label for="section">Section</label>
+         <input id="form-section" name="section" />
+         <br />
+         <label for="instructor">Instructor</label>
+         <input id="form-instructor" name="instructor" type="checkbox" />
+         <br />
+         <label for="seats">Seats</label>
+         <input id="form-seats" name="seats" type="checkbox" />
+         <br />
          <button type="submit" name="submitButton">Submit!</button>
-		</form>
-		
-		<br/>
-		<br/>
-		<br/>
+      </form>
 
-		<p id="fbData"></p>
+      <br />
+      <br />
+      <br />
+
+      <p id="fbData"></p>
    </body>
 </html>

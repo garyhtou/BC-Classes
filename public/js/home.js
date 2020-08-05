@@ -9,9 +9,14 @@ $(document).ready(function () {
       //create object
       var form = $(this);
       var formData = {
-         classID: $("input[name=classID]").val(),
-         email: $("input[name=email]").val(),
-      };
+         quarter: $("input[name=quarter]").val(),
+         subject: $("input[name=subject]").val(),
+         course: $("input[name=course]").val(),
+         section: $("input[name=section]").val(),
+         instructor: $("input[name=instructor]").prop("checked"),
+         seats: $("input[name=seats]").prop("checked"),
+		};
+		console.log(formData);
       var method = form.attr("method");
       var url = form.attr("action");
 
@@ -34,12 +39,13 @@ $(document).ready(function () {
                })
                   .done(function (result) {
                      alert(result); // show response from the server.
+                     $("#registrationForm").reset();
                   })
                   .fail(function (result) {
                      alert(result.responseText);
                   })
                   .always(function (result) {
-                     //clear form
+                     //
                   });
             })
             .catch(function (error) {
