@@ -42,7 +42,8 @@ const actionChanged = "changed";
 var changes = {};
 var oldChanges = {};
 
-function findChanges() {
+function findChanges(callback) {
+   callback = callback || function () {};
    // FORMAT:
    // Everything should be friendly values
    // add or remove: [action, changedValue, location]
@@ -114,7 +115,8 @@ function findChanges() {
 
       oldChanges = changes;
       changes = newChanges;
-      console.log("end");
+		console.log("end");
+		callback(null, changes);
    });
 
    // HELPER METHODS ---------------------------
