@@ -1,14 +1,17 @@
 require("dotenv").config();
 // Check for Firebase Web Config
-if (
-	!process.env.GOOGLE_APPLICATION_CREDENTIALS ||
-	!process.env.FIREBASE_WEB_CONFIG ||
-	!process.env.EMAIL_HOST ||
-	!process.env.EMAIL_USER ||
-	!process.env.EMAIL_PASS ||
-	!process.env.EMAIL_FROM
-) {
-	throw new Error("Missing value in .env");
+var requiredEnv = [
+	"process.env.GOOGLE_APPLICATION_CREDENTIALS",
+	"process.env.FIREBASE_WEB_CONFIG",
+	"process.env.EMAIL_HOST",
+	"process.env.EMAIL_USER",
+	"process.env.EMAIL_PASS",
+	"process.env.EMAIL_FROM",
+];
+for (env of requiredEnv) {
+	if (!eval(env)) {
+		throw new Error("Missing value in .env: " + env);
+	}
 }
 
 var express = require("express");
