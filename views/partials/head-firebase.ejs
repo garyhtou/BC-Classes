@@ -7,42 +7,66 @@
 <!-- FirebaseUI -->
 <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
 <link
-   type="text/css"
-   rel="stylesheet"
-   href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css"
+	type="text/css"
+	rel="stylesheet"
+	href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css"
 />
 
 <script>
-     var firebaseConfig = <%- process.env.FIREBASE_WEB_CONFIG %>;
-     // Initialize Firebase
-   firebase.initializeApp(firebaseConfig);
-     firebase.analytics();
-     firebase.auth();
+	var firebaseConfig = <%- process.env.FIREBASE_WEB_CONFIG %>;
+	// Initialize Firebase
+	firebase.initializeApp(firebaseConfig);
+	firebase.analytics();
+	firebase.auth();
 
-     firebase.auth().onAuthStateChanged(function (user) {
-     	if (user) {
-     		// User is signed in.
-     		var displayName = user.displayName;
-     		var email = user.email;
-     		var emailVerified = user.emailVerified;
-     		var photoURL = user.photoURL;
-     		var isAnonymous = user.isAnonymous;
-     		var uid = user.uid;
-     		var providerData = user.providerData;
+	firebase.auth().onAuthStateChanged(function (user) {
+		if (user) {
+			// User is signed in.
+			var displayName = user.displayName;
+			var email = user.email;
+			var emailVerified = user.emailVerified;
+			var photoURL = user.photoURL;
+			var isAnonymous = user.isAnonymous;
+			var uid = user.uid;
+			var providerData = user.providerData;
 
-     		$("#displayName").text(displayName);
+			// update user's photoURL
+			firebase
+				.database()
+				.ref("/users/" + uid + "/photoURL")
+				.set(photoURL);
 
-     		firebase
-     			.database()
-     			.ref("/registrations/" + uid)
-     			.once("value")
-     			.then(function (snapshot) {
-     				console.log(JSON.stringify(snapshot));
-     				$("#fbData").text(JSON.stringify(snapshot.val()));
-     			});
-     	} else {
-     		// User is signed out.
-     		$("#displayName").text("Signed out");
-     	}
-     });
+			// get user's registrations
+			// firebase
+			// 	.database()
+			// 	.ref("/registrations/" + uid)
+			// 	.once("value")
+			// 	.then(function (snapshot) {
+			// 		console.log(JSON.stringify(snapshot));
+			// 		$("#fbData").text(JSON.stringify(snapshot));
+			// 	});
+
+			firebase
+				.database()
+				.ref("/registrations/" + uid)
+				.on("value", (snapshot) => {
+					console.log("snap:" + JSON.stringify(snapshot));
+					$("#fbData").text(JSON.stringify(snapshot));
+				});
+
+			// get user's info
+			firebase
+				.database()
+				.ref("/users/" + uid)
+				.once("value")
+				.then(function (snapshot) {
+					console.log("User info: " + JSON.stringify(snapshot.val()));
+
+					$("#displayName").text(displayName);
+					$("#photoURL").attr("src", photoURL);
+				});
+		} else {
+			// User is not signed in.
+		}
+	});
 </script>

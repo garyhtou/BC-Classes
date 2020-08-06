@@ -1,51 +1,57 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title>Home Page</title>
-      <%- include('partials/head.ejs') %> <%-
-      include('partials/head-firebase.ejs') %>
-      <script src="/js/home.js"></script>
-   </head>
+	<head>
+		<title>Home Page</title>
+		<%- include('partials/head.ejs') %> <%-
+		include('partials/head-firebase.ejs') %>
+		<script src="/js/home.js"></script>
+	</head>
 
-   <body>
-      <h1>Welcome to the home page.</h1>
-      <h2 id="displayName">guest</h2>
+	<body>
+		<h1>Welcome to the home page.</h1>
+		<h2 id="displayName">guest</h2>
+		<img
+			id="photoURL"
+			src="https://www.gravatar.com/avatar/?d=mp"
+			style="border-radius: 50%;"
+		/>
 
 		<% for(user in registrations) { %>
-			<% for(registration in registrations[user]) { %>
+			<% for(registration in
+			registrations[user]) { %>
 				<p>
-					<%= JSON.stringify(registration); %>
+					<%= JSON.stringify(registrations[user][registration]); %>
 				</p>
 			<% } %>
 		<% } %>
 
-      <br />
-      <form id="registrationForm" action="/register" method="POST">
-         <label for="quarter">Quarter</label>
-         <input id="form-quarter" name="quarter" />
-         <br />
-         <label for="subject">Subject</label>
-         <input id="form-subject" name="subject" />
-         <br />
-         <label for="course">Course</label>
-         <input id="form-course" name="course" />
-         <br />
-         <label for="section">Section</label>
-         <input id="form-section" name="section" />
-         <br />
-         <label for="instructor">Instructor</label>
-         <input id="form-instructor" name="instructor" type="checkbox" />
-         <br />
-         <label for="seats">Seats</label>
-         <input id="form-seats" name="seats" type="checkbox" />
-         <br />
-         <button type="submit" name="submitButton">Submit!</button>
-      </form>
+		<br />
+		<form id="registrationForm" action="/register" method="POST">
+			<label for="quarter">Quarter</label>
+			<input id="form-quarter" name="quarter" />
+			<br />
+			<label for="subject">Subject</label>
+			<input id="form-subject" name="subject" />
+			<br />
+			<label for="course">Course</label>
+			<input id="form-course" name="course" />
+			<br />
+			<label for="section">Section</label>
+			<input id="form-section" name="section" />
+			<br />
+			<label for="instructor">Instructor</label>
+			<input id="form-instructor" name="instructor" type="checkbox" />
+			<br />
+			<label for="seats">Seats</label>
+			<input id="form-seats" name="seats" type="checkbox" />
+			<br />
+			<button type="submit" name="submitButton">Submit!</button>
+		</form>
 
-      <br />
-      <br />
-      <br />
+		<br />
+		<br />
+		<br />
 
-      <p id="fbData"></p>
-   </body>
+		<p id="fbData"></p>
+	</body>
 </html>
