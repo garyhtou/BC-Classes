@@ -97,8 +97,10 @@ function getClasses(callback) {
 						} else {
 							//console.log(JSON.stringify(data.classes));
 
-							// not necessary, but make sure everything's save before call back
+							// Make sure everything's save before call back
 							data.classes.quarters = quarters;
+							console.log("GOT ALL CLASSES");
+							console.log("Current time: " + new Date().toLocaleString());
 							callback(null, data.classes);
 						}
 					}

@@ -1,7 +1,9 @@
 require("dotenv").config();
 // Check for required env
 if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-	throw new Error("Missing value in .env: process.env.GOOGLE_APPLICATION_CREDENTIALS");
+	throw new Error(
+		"Missing value in .env: process.env.GOOGLE_APPLICATION_CREDENTIALS"
+	);
 }
 if (!process.env.FIREBASE_WEB_CONFIG) {
 	throw new Error("Missing value in .env: process.env.FIREBASE_WEB_CONFIG");
@@ -18,8 +20,6 @@ if (!process.env.EMAIL_PASS) {
 if (!process.env.EMAIL_FROM) {
 	throw new Error("Missing value in .env: process.env.EMAIL_FROM");
 }
-
-
 
 var express = require("express");
 var bodyParser = require("body-parser");
@@ -47,4 +47,5 @@ app.use("/", routes);
 // Start app!
 app.listen(80, () => {
 	console.log("listening on port 80");
+	console.log("Current time: " + new Date().toLocaleString());
 });
