@@ -5,21 +5,30 @@ ui.start("#firebaseui-auth-container", {
 		signInSuccessWithAuthResult: function (authResult, redirectUrl) {
 			var isNewUser = authResult.additionalUserInfo.isNewUser;
 			if (isNewUser) {
-				var data = {
-					name: authResult.user.displayName,
-					email: authResult.user.email,
-					photoURL: authResult.user.photoURL,
-				};
-
-				firebase
-					.database()
-					.ref("/users/" + authResult.user.uid)
-					.set(data);
+				DBaddNewUser(authResult.user).then(() => {
+					window.location.replace("/"); //redirect to home
+				});
 			}
-			// User successfully signed in.
-			// Return type determines whether we continue the redirect automatically
-			// or whether we leave that to developer to handle.
-			return true;
+
+			async function DBaddNewUser(user) {
+				return new Promise((resolve, reject) => {
+					var data = {
+						name: user.displayName,
+						email: user.email,
+						photoURL: user.photoURL,
+					};
+
+					var uid = user.uid;
+
+					firebase
+						.database()
+						.ref("users/" + uid)
+						.set(data)
+						.then(() => {
+							resolve();
+						});
+				});
+			}
 		},
 	},
 	// Will use popup for IDP Providers sign-in flow instead of the default, redirect.
