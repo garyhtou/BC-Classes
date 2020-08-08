@@ -8,6 +8,7 @@
 	</head>
 
 	<body>
+		<%- include('partials/fbSDK.ejs') %>
 		<h1>Welcome to the BC Classes.</h1>
 		<h2 id="displayName">guest</h2>
 		<img
@@ -16,14 +17,12 @@
 			style="border-radius: 50%;"
 		/>
 
-		<% for(user in registrations) { %>
-			<% for(registration in
-			registrations[user]) { %>
-				<p>
-					<%= JSON.stringify(registrations[user][registration]); %>
-				</p>
-			<% } %>
-		<% } %>
+		<% for(user in registrations) { %> <% for(registration in
+		registrations[user]) { %>
+		<p>
+			<%= JSON.stringify(registrations[user][registration]); %>
+		</p>
+		<% } %> <% } %>
 
 		<br />
 		<form id="registrationForm" action="/register" method="POST">

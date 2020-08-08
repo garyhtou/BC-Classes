@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title>Home Page</title>
-      <%- include('partials/head.ejs') %> <%-
-      include('partials/head-firebase.ejs') %>
-      <script src="/js/login.js"></script>
-   </head>
+	<head>
+		<title>Home Page</title>
+		<%- include('partials/head.ejs') %> <%-
+		include('partials/head-firebase.ejs') %>
+		<script src="/js/login.js"></script>
+	</head>
 
-   <body>
-      <h1>Login</h1>
-      <div id="firebaseui-auth-container"></div>
-   </body>
+	<body>
+		<%- include('partials/fbSDK.ejs') %>
+		<h1>Login</h1>
+		<div id="firebaseui-auth-container"></div>
+	</body>
 </html>
