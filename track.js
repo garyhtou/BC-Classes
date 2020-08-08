@@ -1,13 +1,13 @@
 var cron = require("node-cron");
 var fbAdmin = require("./utils/fbAdmin");
 var bcAPI = require("./utils/bcAPI");
-var email = require("./email");
+var email = require("./utils/email");
 
 // SCHEDULE
 var scheduleMethods = [
 	[bcAPI.update.updateQuarters, "0 0 */12 * * *"],
 	[findChanges, "0 0 * * * *"],
-	[bcAPI.update.updateAllSeats, "0 0 4 * * *"],
+	// [bcAPI.update.updateAllSeats, "0 0 4 * * *"],
 ];
 var loopSchedulerCounter = 0;
 var loopScheduler = function (arr) {
@@ -134,232 +134,225 @@ function findChanges(callback) {
 		}
 
 		callback(null, changes);
-		// });
+	});
 
-		// HELPER METHODS ---------------------------
+	// HELPER METHODS ---------------------------
 
-		function compareQuarters(newData, oldData, location) {
-			var results = [];
+	function compareQuarters(newData, oldData, location) {
+		var results = [];
 
-			try {
-				var newObject = newData.classes.quarters;
-				var oldObject = oldData.classes.quarters;
+		try {
+			var newObject = newData.classes.quarters;
+			var oldObject = oldData.classes.quarters;
 
-				if (newObject == undefined || oldObject == undefined) {
-					// incase parent or current  is removed
-					console.log("Undefined Object: " + location);
-					throw new Error("Object is undefined. Parent was removed");
-				}
-			} catch (e) {
-				//this should never happen
-				return results;
+			if (newObject == undefined || oldObject == undefined) {
+				// incase parent or current  is removed
+				console.log("Undefined Object: " + location);
+				throw new Error("Object is undefined. Parent was removed");
 			}
-
-			//compare
-			var newList = Object.keys(newObject);
-			var oldList = Object.keys(oldObject);
-			var added = newList.filter((x) => oldList.indexOf(x) === -1);
-			var removed = oldList.filter((x) => newList.indexOf(x) === -1);
-
-			//format results
-			var location = [];
-			for (item of added) {
-				results.push([actionAdded, item, location]);
-			}
-			for (item of removed) {
-				results.push([actionRemoved, item, location]);
-			}
+		} catch (e) {
+			//this should never happen
 			return results;
 		}
-		function compareSubjects(newData, oldData, location) {
-			var results = [];
 
-			try {
-				var newObject = newData.classes.quarters[location[0]];
-				var oldObject = oldData.classes.quarters[location[0]];
+		//compare
+		var newList = Object.keys(newObject);
+		var oldList = Object.keys(oldObject);
+		var added = newList.filter((x) => oldList.indexOf(x) === -1);
+		var removed = oldList.filter((x) => newList.indexOf(x) === -1);
 
-				if (newObject == undefined || oldObject == undefined) {
-					// incase parent or current  is removed
-					console.log("Undefined Object: " + location);
-					throw new Error("Object is undefined. Parent was removed");
-				}
-			} catch (e) {
-				return results;
+		//format results
+		var location = [];
+		for (item of added) {
+			results.push([actionAdded, item, location]);
+		}
+		for (item of removed) {
+			results.push([actionRemoved, item, location]);
+		}
+		return results;
+	}
+	function compareSubjects(newData, oldData, location) {
+		var results = [];
+
+		try {
+			var newObject = newData.classes.quarters[location[0]];
+			var oldObject = oldData.classes.quarters[location[0]];
+
+			if (newObject == undefined || oldObject == undefined) {
+				// incase parent or current  is removed
+				console.log("Undefined Object: " + location);
+				throw new Error("Object is undefined. Parent was removed");
 			}
-
-			//compare
-			var newList = Object.keys(newObject);
-			var oldList = Object.keys(oldObject);
-			var added = newList.filter((x) => oldList.indexOf(x) === -1);
-			var removed = oldList.filter((x) => newList.indexOf(x) === -1);
-
-			//format results
-			var location = [newData.quarters[location[0]].FriendlyName];
-			for (item of added) {
-				results.push([actionAdded, item, location]);
-			}
-			for (item of removed) {
-				results.push([actionRemoved, item, location]);
-			}
+		} catch (e) {
 			return results;
 		}
-		function compareCourses(newData, oldData, location) {
-			var results = [];
 
-			try {
-				var newObject =
-					newData.classes.quarters[location[0]][location[1]].Courses;
-				var oldObject =
-					oldData.classes.quarters[location[0]][location[1]].Courses;
+		//compare
+		var newList = Object.keys(newObject);
+		var oldList = Object.keys(oldObject);
+		var added = newList.filter((x) => oldList.indexOf(x) === -1);
+		var removed = oldList.filter((x) => newList.indexOf(x) === -1);
 
-				if (newObject == undefined || oldObject == undefined) {
-					// incase parent or current  is removed
-					console.log("Undefined Object: " + location);
-					throw new Error("Object is undefined. Parent was removed");
-				}
-			} catch (e) {
-				return results;
+		//format results
+		var location = [newData.quarters[location[0]].FriendlyName];
+		for (item of added) {
+			results.push([actionAdded, item, location]);
+		}
+		for (item of removed) {
+			results.push([actionRemoved, item, location]);
+		}
+		return results;
+	}
+	function compareCourses(newData, oldData, location) {
+		var results = [];
+
+		try {
+			var newObject =
+				newData.classes.quarters[location[0]][location[1]].Courses;
+			var oldObject =
+				oldData.classes.quarters[location[0]][location[1]].Courses;
+
+			if (newObject == undefined || oldObject == undefined) {
+				// incase parent or current  is removed
+				console.log("Undefined Object: " + location);
+				throw new Error("Object is undefined. Parent was removed");
 			}
-
-			//compare
-			var newList = Object.keys(newObject);
-			var oldList = Object.keys(oldObject);
-			var added = newList.filter((x) => oldList.indexOf(x) === -1);
-			var removed = oldList.filter((x) => newList.indexOf(x) === -1);
-
-			//format results
-			var location = [newData.quarters[location[0]].FriendlyName, location[1]];
-			for (item of added) {
-				results.push([actionAdded, item, location]);
-			}
-			for (item of removed) {
-				results.push([actionRemoved, item, location]);
-			}
+		} catch (e) {
 			return results;
 		}
-		function compareSections(newData, oldData, location) {
-			var results = [];
 
-			try {
-				var newObject =
-					newData.classes.quarters[location[0]][location[1]].Courses[
-						location[2]
-					].Sections;
-				var oldObject =
-					oldData.classes.quarters[location[0]][location[1]].Courses[
-						location[2]
-					].Sections;
+		//compare
+		var newList = Object.keys(newObject);
+		var oldList = Object.keys(oldObject);
+		var added = newList.filter((x) => oldList.indexOf(x) === -1);
+		var removed = oldList.filter((x) => newList.indexOf(x) === -1);
 
-				if (newObject == undefined || oldObject == undefined) {
-					// incase parent or current  is removed
-					console.log("Undefined Object: " + location);
-					throw new Error("Object is undefined. Parent was removed");
-				}
-			} catch (e) {
-				return results;
+		//format results
+		var location = [newData.quarters[location[0]].FriendlyName, location[1]];
+		for (item of added) {
+			results.push([actionAdded, item, location]);
+		}
+		for (item of removed) {
+			results.push([actionRemoved, item, location]);
+		}
+		return results;
+	}
+	function compareSections(newData, oldData, location) {
+		var results = [];
+
+		try {
+			var newObject =
+				newData.classes.quarters[location[0]][location[1]].Courses[location[2]]
+					.Sections;
+			var oldObject =
+				oldData.classes.quarters[location[0]][location[1]].Courses[location[2]]
+					.Sections;
+
+			if (newObject == undefined || oldObject == undefined) {
+				// incase parent or current  is removed
+				console.log("Undefined Object: " + location);
+				throw new Error("Object is undefined. Parent was removed");
 			}
+		} catch (e) {
+			return results;
+		}
 
-			//compare
-			var newList = Object.keys(newObject);
-			var oldList = Object.keys(oldObject);
-			var added = newList.filter((x) => oldList.indexOf(x) === -1);
-			var removed = oldList.filter((x) => newList.indexOf(x) === -1);
+		//compare
+		var newList = Object.keys(newObject);
+		var oldList = Object.keys(oldObject);
+		var added = newList.filter((x) => oldList.indexOf(x) === -1);
+		var removed = oldList.filter((x) => newList.indexOf(x) === -1);
 
-			//format results
+		//format results
+		var location = [
+			newData.quarters[location[0]].FriendlyName,
+			location[1],
+			location[2],
+		];
+		for (item of added) {
+			results.push([actionAdded, item, location]);
+		}
+		for (item of removed) {
+			results.push([actionRemoved, item, location]);
+		}
+		return results;
+	}
+	function compareInstructor(newData, oldData, location) {
+		var results = [];
+
+		try {
+			var newObject =
+				newData.classes.quarters[location[0]][location[1]].Courses[location[2]]
+					.Sections[location[3]];
+			var oldObject =
+				oldData.classes.quarters[location[0]][location[1]].Courses[location[2]]
+					.Sections[location[3]];
+
+			if (newObject == undefined || oldObject == undefined) {
+				// incase parent or current is removed
+				console.log("Undefined Object: " + location);
+				throw new Error("Object is undefined. Parent was removed");
+			}
+		} catch (e) {
+			return results;
+		}
+
+		//compare
+		var newInstructor = newObject.Offered[0].InstructorName;
+		var oldInstructor = oldObject.Offered[0].InstructorName;
+
+		if (newInstructor != oldInstructor) {
 			var location = [
 				newData.quarters[location[0]].FriendlyName,
 				location[1],
 				location[2],
+				location[3],
 			];
-			for (item of added) {
-				results.push([actionAdded, item, location]);
+			results.push([actionChanged, [newInstructor, oldInstructor], location]);
+		}
+
+		return results;
+	}
+	function compareSeats(newData, oldData, location) {
+		var results = [];
+
+		try {
+			var newObject =
+				newData.classes.quarters[location[0]][location[1]].Courses[location[2]]
+					.Sections[location[3]];
+			var oldObject =
+				oldData.classes.quarters[location[0]][location[1]].Courses[location[2]]
+					.Sections[location[3]];
+
+			if (newObject == undefined || oldObject == undefined) {
+				// incase parent or current is removed
+				console.log("Undefined Object: " + location);
+				throw new Error("Object is undefined. Parent was removed");
 			}
-			for (item of removed) {
-				results.push([actionRemoved, item, location]);
-			}
+		} catch (e) {
 			return results;
 		}
-		function compareInstructor(newData, oldData, location) {
-			var results = [];
 
-			try {
-				var newObject =
-					newData.classes.quarters[location[0]][location[1]].Courses[
-						location[2]
-					].Sections[location[3]];
-				var oldObject =
-					oldData.classes.quarters[location[0]][location[1]].Courses[
-						location[2]
-					].Sections[location[3]];
+		//compare
+		var newAvailSeats = newObject.SeatsAvailable;
+		var oldAvailSeats = oldObject.SeatsAvailable;
 
-				if (newObject == undefined || oldObject == undefined) {
-					// incase parent or current is removed
-					console.log("Undefined Object: " + location);
-					throw new Error("Object is undefined. Parent was removed");
-				}
-			} catch (e) {
-				return results;
-			}
-
-			//compare
-			var newInstructor = newObject.Offered[0].InstructorName;
-			var oldInstructor = oldObject.Offered[0].InstructorName;
-
-			if (newInstructor != oldInstructor) {
-				var location = [
-					newData.quarters[location[0]].FriendlyName,
-					location[1],
-					location[2],
-					location[3],
-				];
-				results.push([actionChanged, [newInstructor, oldInstructor], location]);
-			}
-
-			return results;
+		if (newAvailSeats != oldAvailSeats) {
+			var location = [
+				newData.quarters[location[0]].FriendlyName,
+				location[1],
+				location[2],
+				location[3],
+			];
+			results.push([
+				actionChanged,
+				[newAvailSeats.toString(), oldAvailSeats.toString()],
+				location,
+			]);
 		}
-		function compareSeats(newData, oldData, location) {
-			var results = [];
 
-			try {
-				var newObject =
-					newData.classes.quarters[location[0]][location[1]].Courses[
-						location[2]
-					].Sections[location[3]];
-				var oldObject =
-					oldData.classes.quarters[location[0]][location[1]].Courses[
-						location[2]
-					].Sections[location[3]];
-
-				if (newObject == undefined || oldObject == undefined) {
-					// incase parent or current is removed
-					console.log("Undefined Object: " + location);
-					throw new Error("Object is undefined. Parent was removed");
-				}
-			} catch (e) {
-				return results;
-			}
-
-			//compare
-			var newAvailSeats = newObject.SeatsAvailable;
-			var oldAvailSeats = oldObject.SeatsAvailable;
-
-			if (newAvailSeats != oldAvailSeats) {
-				var location = [
-					newData.quarters[location[0]].FriendlyName,
-					location[1],
-					location[2],
-					location[3],
-				];
-				results.push([
-					actionChanged,
-					[newAvailSeats.toString(), oldAvailSeats.toString()],
-					location,
-				]);
-			}
-
-			return results;
-		}
-	});
+		return results;
+	}
 }
 
 //get change history

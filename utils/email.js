@@ -1,5 +1,12 @@
 var nodemailer = require("nodemailer");
-var fbAdmin = require("./utils/fbAdmin");
+var fbAdmin = require("./fbAdmin");
+
+var ejs = require("ejs");
+var template_changeNotification = require("fs").readFileSync(
+	"./utils/emailTemplates/changeNotification.ejs",
+	"utf-8"
+);
+
 require("dotenv").config();
 
 let transporter = nodemailer.createTransport({
@@ -16,8 +23,106 @@ async function queueEmailChanges(changes) {
 	compileEmails(changes, (err, emails) => {
 		console.log("EMAILS: " + JSON.stringify(emails));
 
-		return; //TODO ACTUALLY SEND EMAIL
-		sendEmail();
+		var emailLoopCounter = 0;
+		var emailLoop = function (emails) {
+			var email = emails[emailLoopCounter];
+			var to = email[0];
+			var name = email[1];
+			var type = email[2];
+			var change = email[3];
+
+			console.log("in email loop for " + to);
+
+			var locationLast = change[2][change[2].length - 1];
+			if (locationLast == undefined) {
+				locationLast = "avalaible quarters";
+			}
+
+			var location = "";
+			// remove subject with course is in path
+			if (type == "quarter") {
+				location = locationLast;
+			} else if (type == "subject") {
+				location = change[2].join(", ");
+			} else if (type == "section" || type == "instructor" || type == "seats") {
+				var locListNoSubject = [...change[2]];
+				locListNoSubject[3] = "section " + locListNoSubject[3];
+				locationLast = locListNoSubject[3];
+				locListNoSubject.splice(1, 1);
+				location = locListNoSubject.join(", ");
+			} else {
+				var locListNoSubject = [...change[2]];
+				locListNoSubject.splice(1, 1);
+				location = locListNoSubject.join(", ");
+			}
+
+			var subject = "[BC Classes] ";
+			var htmlMessage = "";
+			var textMessage = "";
+			if (change[0] == "changed") {
+				var typeCap = type.split("");
+				typeCap[0] = typeCap[0].toUpperCase();
+				typeCap = typeCap.join("");
+
+				htmlMessage =
+					typeCap +
+					" has changed from <b>" +
+					change[1][0] +
+					"</b> to <b>" +
+					change[1][1] +
+					"</b> for " +
+					location +
+					".";
+
+				textMessage =
+					typeCap +
+					" has changed from " +
+					change[1][0] +
+					" to " +
+					change[1][1] +
+					" for " +
+					location +
+					".";
+
+				subject +=
+					typeCap + " has changed from " + change[1][0] + " to " + change[1][1];
+			} else if (change[0] == "added") {
+				htmlMessage =
+					"<b>" + change[1] + "</b> has been <b>added</b> to " + location + ".";
+				textMessage = change[1] + " has been added to " + location + ".";
+
+				subject += change[1] + " has been added";
+			} else if (change[0] == "removed") {
+				htmlMessage =
+					"<b>" +
+					change[1] +
+					"</b> has been <b>removed</b> from " +
+					location +
+					".";
+				textMessage = change[1] + " has been removed from " + location + ".";
+
+				subject += change[1] + " has been removed";
+			}
+
+			var html = ejs.render(template_changeNotification, {
+				data: { name: name, locationLast: locationLast, message: htmlMessage },
+			});
+
+			var text =
+				"Hello " + name + ", \n" + textMessage + "\nBest,\nGary's Pet Robot 🤖";
+
+			sendEmail(to, subject, html, text, (err, info) => {
+				console.log(info);
+
+				emailLoopCounter++;
+				if (emailLoopCounter < emails.length) {
+					emailLoop(emails);
+				} else {
+					console.log("DONE SENDING EMAILS!");
+				}
+			});
+		};
+		emailLoop(emails);
 	});
 }
 
@@ -27,8 +132,8 @@ function compileEmails(changes, callback) {
 
 	//wait until reg is 100% updated
 	fbAdmin.updateRegistrations(async (err, registrations) => {
-		//format [ email, changeType, [changes] ]
-		var emails = []; //[ ["hello@domain.com", "course", <insert from param>] ]
+		//format [ email, name, changeType, [changes] ]
+		var emails = []; //[ ["hello@domain.com", "Bill Joe", "course", <insert from param>] ]
 
 		for (user in registrations) {
 			for (registration in registrations[user]) {
@@ -89,63 +194,55 @@ function compileEmails(changes, callback) {
 
 				// find match
 				if (registrationType.includes("quarter")) {
-					for (quarter in changes.quarters) {
-						var change = changes.quarters[quarter];
+					for (subject in changes.subjects) {
+						var change = changes.subjects[subject];
 						console.log(change);
 
 						//if changed matches registration
-						if (registrationObj.quarter == change[1].replace(/ /g, "")) {
-							var userEmail = await fbAdmin.getUserEmail(user);
-							emails.push([userEmail, "quarter", change]);
+						if (registrationObj.quarter == change[2][0].replace(/ /g, "")) {
+							var userInfo = await fbAdmin.getUserInfo(user);
+							var userEmail = userInfo.email;
+							var userName = userInfo.name;
+							emails.push([userEmail, userName, "quarter", change]);
 						}
 					}
 				}
 				if (registrationType.includes("subject")) {
-					for (subject in changes.subjects) {
-						var change = changes.subjects[subject];
+					for (course in changes.courses) {
+						var change = changes.courses[course];
 						console.log(change);
 						//if changed matches registration
 						if (
-							registrationObj.subject == change[1] &&
-							registrationObj.quarter == change[2][0].replace(/ /g, "")
+							registrationObj.quarter == change[2][0].replace(/ /g, "") &&
+							registrationObj.subject == change[2][0]
 						) {
-							var userEmail = await fbAdmin.getUserEmail(user);
-							emails.push([userEmail, "subject", change]);
+							var userInfo = await fbAdmin.getUserInfo(user);
+							var userEmail = userInfo.email;
+							var userName = userInfo.name;
+							emails.push([userEmail, userName, "subject", change]);
 						}
 					}
 				}
 				if (registrationType.includes("course")) {
-					for (course in changes.courses) {
-						var change = changes.courses[course];
-						console.log(change);
-
-						//if changed matches registration
-						if (
-							registrationObj.course == change[1] &&
-							registrationObj.quarter == change[2][0].replace(/ /g, "") &&
-							registrationObj.subject == change[2][1]
-						) {
-							var userEmail = await fbAdmin.getUserEmail(user);
-							emails.push([userEmail, "course", change]);
-						}
-					}
-				}
-				if (registrationType.includes("section")) {
 					for (section in changes.sections) {
 						var change = changes.sections[section];
 						console.log(change);
 
 						//if changed matches registration
 						if (
-							registrationObj.section == change[1] &&
 							registrationObj.quarter == change[2][0].replace(/ /g, "") &&
 							registrationObj.subject == change[2][1] &&
-							registrationObj.course == change[2][2]
+							registrationObj.course == change[2][3]
 						) {
-							var userEmail = await fbAdmin.getUserEmail(user);
-							emails.push([userEmail, "section", change]);
+							var userInfo = await fbAdmin.getUserInfo(user);
+							var userEmail = userInfo.email;
+							var userName = userInfo.name;
+							emails.push([userEmail, userName, "course", change]);
 						}
 					}
+				}
+				if (registrationType.includes("section")) {
+					// no action here... registrations must have selected updates about instructor and/or seats in the section
 				}
 				if (registrationType.includes("instructor")) {
 					for (instructor in changes.instructor) {
@@ -159,8 +256,10 @@ function compileEmails(changes, callback) {
 							registrationObj.course == change[2][2] &&
 							registrationObj.section == change[2][3]
 						) {
-							var userEmail = await fbAdmin.getUserEmail(user);
-							emails.push([userEmail, "instructor", change]);
+							var userInfo = await fbAdmin.getUserInfo(user);
+							var userEmail = userInfo.email;
+							var userName = userInfo.name;
+							emails.push([userEmail, userName, "instructor", change]);
 						}
 					}
 				}
@@ -176,9 +275,11 @@ function compileEmails(changes, callback) {
 							registrationObj.course == change[2][2] &&
 							registrationObj.section == change[2][3]
 						) {
-							var userEmail = await fbAdmin.getUserEmail(user);
-							console.log("EMAIL: " + userEmail);
-							emails.push([userEmail, "seats", change]);
+							var userInfo = await fbAdmin.getUserInfo(user);
+							var userEmail = userInfo.email;
+							var userName = userInfo.name;
+							console.log("EMAIL: " + userInfo);
+							emails.push([userEmail, userName, "seats", change]);
 						}
 					}
 				}

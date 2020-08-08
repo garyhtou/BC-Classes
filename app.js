@@ -35,7 +35,7 @@ var fbAdmin = require("./utils/fbAdmin");
 fbAdmin.updateRegistrations();
 
 // email
-var email = require("./email");
+var email = require("./utils/email");
 
 // tracker
 var track = require("./track");

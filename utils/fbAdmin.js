@@ -46,6 +46,11 @@ function addRegistration(idToken, data, callback) {
 		!(seats == "true" || seats == "false")
 	) {
 		return callback("Invalid boolean");
+	} else if (!(data.instructor || data.seats)) {
+		// you must select to be notified about updates about instructor and/or seats in the section
+		return callback(
+			"Please select what you would like to be notified about within this section"
+		);
 	}
 
 	//valid fields
@@ -132,14 +137,16 @@ function addChanges(changes) {
 	admin.database().ref("changes/").push(data);
 }
 
-function getUserEmail(uid) {
+function getUserInfo(uid) {
 	return new Promise((resolve, reject) => {
 		admin
 			.database()
-			.ref("/users/" + uid + "/email")
+			.ref("/users/" + uid)
 			.once("value")
 			.then((snapshot) => {
-				resolve(snapshot.val());
+				var email = snapshot.val().email;
+				var name = snapshot.val().name;
+				resolve({ email: email, name: name });
 			});
 	});
 }
@@ -148,5 +155,5 @@ module.exports.admin = admin;
 module.exports.getRegistrations = getRegistrations;
 module.exports.addRegistration = addRegistration;
 module.exports.addChanges = addChanges;
-module.exports.getUserEmail = getUserEmail;
+module.exports.getUserInfo = getUserInfo;
 module.exports.updateRegistrations = updateRegistrations;
