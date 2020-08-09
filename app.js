@@ -40,6 +40,9 @@ var email = require("./utils/email");
 // tracker
 var track = require("./track");
 
+// bcAPI
+var bcAPI = require("./utils/bcAPI");
+
 // Router
 var routes = require("./routes");
 app.use("/", routes);

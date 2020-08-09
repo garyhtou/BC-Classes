@@ -7,7 +7,7 @@ var email = require("./utils/email");
 var scheduleMethods = [
 	[bcAPI.update.updateQuarters, "0 0 */12 * * *"],
 	[findChanges, "0 0 * * * *"],
-	// [bcAPI.update.updateAllSeats, "0 0 4 * * *"],
+	[bcAPI.update.updateAllSeats, "0 30 4 * * *"],
 ];
 var loopSchedulerCounter = 0;
 var loopScheduler = function (arr) {
