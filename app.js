@@ -48,7 +48,8 @@ var routes = require("./routes");
 app.use("/", routes);
 
 // Start app!
-app.listen(80, () => {
+const port = process.env.PORT || 80;
+app.listen(port, () => {
 	console.log("listening on port 80");
 	console.log("Current time: " + new Date().toLocaleString());
 });
