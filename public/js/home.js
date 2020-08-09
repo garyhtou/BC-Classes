@@ -14,8 +14,10 @@ $(document).ready(function () {
 			course: $("input[name=course]").val(),
 			section: $("input[name=section]").val(),
 			instructor: $("input[name=instructor]").prop("checked"),
-			seats: $("input[name=seats]").prop("checked"),
+			seats: $("input[name=seats]").val(),
 		};
+		formData.seats = parseInt(formData.seats);
+
 		console.log(formData);
 		var method = form.attr("method");
 		var url = form.attr("action");

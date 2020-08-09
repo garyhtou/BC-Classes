@@ -18,18 +18,13 @@ var registrations = [];
 
 function addRegistration(idToken, data, callback) {
 	callback = callback || function () {};
-	console.log("addRegistration()\n" + JSON.stringify(data));
-
-	// if (data.section == undefined) {
-	// 	data.section = "";
-	// }
 
 	var quarter = data.quarter;
 	var subject = data.subject;
 	var course = data.course;
 	var section = data.section;
 	var instructor = data.instructor.toString();
-	var seats = data.seats.toString();
+	var seats = data.seats;
 
 	console.log(section);
 
@@ -41,19 +36,26 @@ function addRegistration(idToken, data, callback) {
 		(section != "" && (instructor == "" || seats == ""))
 	) {
 		return callback("Missing field");
-	} else if (
-		!(instructor == "true" || instructor == "false") ||
-		!(seats == "true" || seats == "false")
-	) {
+	} else if (!(instructor == "true" || instructor == "false")) {
 		return callback("Invalid boolean");
-	} else if (!(data.instructor || data.seats)) {
+	}
+
+	if (isNaN(parseInt(data.seats))) {
+		return callback(data.seats + " is not a number");
+	} else if (parseInt(data.seats) < -1) {
+		return callback(data.seats + " is not a valid number of seats");
+	} else {
+		data.seats = parseInt(data.seats);
+		seats = data.seats;
+	}
+	if (section != "" && !(data.instructor || data.seats != -1)) {
 		// you must select to be notified about updates about instructor and/or seats in the section
 		return callback(
 			"Please select what you would like to be notified about within this section"
 		);
 	}
 
-	//valid fields
+	//validate fields
 	if (!Object.keys(bcAPI.getData().quarters).includes(quarter)) {
 		return callback('Invalid field. Quarter "' + quarter + '" not found');
 	} else if (
@@ -102,6 +104,8 @@ function addRegistration(idToken, data, callback) {
 	}
 
 	//add to DB
+	console.log("addRegistration()\n" + JSON.stringify(data));
+
 	data.time = admin.database.ServerValue.TIMESTAMP;
 	console.log(data);
 	admin

@@ -25,6 +25,8 @@ async function queueEmailChanges(changes) {
 
 		var emailLoopCounter = 0;
 		var emailLoop = function (emails) {
+			if (emailLoopCounter >= emails.length) return;
+
 			var email = emails[emailLoopCounter];
 			var to = email[0];
 			var name = email[1];
@@ -118,7 +120,7 @@ async function queueEmailChanges(changes) {
 				if (emailLoopCounter < emails.length) {
 					emailLoop(emails);
 				} else {
-					console.log("DONE SENDING EMAILS!");
+					return console.log("DONE SENDING EMAILS!");
 				}
 			});
 		};
@@ -185,7 +187,7 @@ function compileEmails(changes, callback) {
 					registrationObj.subject != "" &&
 					registrationObj.course != "" &&
 					registrationObj.section != "" &&
-					registrationObj.seats == true
+					registrationObj.seats != -1
 				) {
 					registrationType.push("seats");
 				}
@@ -196,7 +198,6 @@ function compileEmails(changes, callback) {
 				if (registrationType.includes("quarter")) {
 					for (subject in changes.subjects) {
 						var change = changes.subjects[subject];
-						console.log(change);
 
 						//if changed matches registration
 						if (registrationObj.quarter == change[2][0].replace(/ /g, "")) {
@@ -204,13 +205,13 @@ function compileEmails(changes, callback) {
 							var userEmail = userInfo.email;
 							var userName = userInfo.name;
 							emails.push([userEmail, userName, "quarter", change]);
+							console.log(change);
 						}
 					}
 				}
 				if (registrationType.includes("subject")) {
 					for (course in changes.courses) {
 						var change = changes.courses[course];
-						console.log(change);
 						//if changed matches registration
 						if (
 							registrationObj.quarter == change[2][0].replace(/ /g, "") &&
@@ -220,13 +221,13 @@ function compileEmails(changes, callback) {
 							var userEmail = userInfo.email;
 							var userName = userInfo.name;
 							emails.push([userEmail, userName, "subject", change]);
+							console.log(change);
 						}
 					}
 				}
 				if (registrationType.includes("course")) {
 					for (section in changes.sections) {
 						var change = changes.sections[section];
-						console.log(change);
 
 						//if changed matches registration
 						if (
@@ -238,6 +239,7 @@ function compileEmails(changes, callback) {
 							var userEmail = userInfo.email;
 							var userName = userInfo.name;
 							emails.push([userEmail, userName, "course", change]);
+							console.log(change);
 						}
 					}
 				}
@@ -247,8 +249,6 @@ function compileEmails(changes, callback) {
 				if (registrationType.includes("instructor")) {
 					for (instructor in changes.instructor) {
 						var change = changes.instructor[instructor];
-						console.log(change);
-
 						//if changed matches registration
 						if (
 							registrationObj.quarter == change[2][0].replace(/ /g, "") &&
@@ -260,13 +260,13 @@ function compileEmails(changes, callback) {
 							var userEmail = userInfo.email;
 							var userName = userInfo.name;
 							emails.push([userEmail, userName, "instructor", change]);
+							console.log(change);
 						}
 					}
 				}
 				if (registrationType.includes("seats")) {
 					for (seat in changes.seats) {
 						var change = changes.seats[seat];
-						console.log(change);
 
 						//if changed matches registration
 						if (
@@ -275,11 +275,18 @@ function compileEmails(changes, callback) {
 							registrationObj.course == change[2][2] &&
 							registrationObj.section == change[2][3]
 						) {
-							var userInfo = await fbAdmin.getUserInfo(user);
-							var userEmail = userInfo.email;
-							var userName = userInfo.name;
-							console.log("EMAIL: " + userInfo);
-							emails.push([userEmail, userName, "seats", change]);
+							//if number of seats went down and is <= registration request
+							if (
+								parseInt(change[1][0]) < parseInt(change[1][1]) &&
+								parseInt(registrationObj.seats) >= parseInt(change[1][0]) &&
+								parseInt(registrationObj.seats) <= parseInt(change[1][1])
+							) {
+								var userInfo = await fbAdmin.getUserInfo(user);
+								var userEmail = userInfo.email;
+								var userName = userInfo.name;
+								emails.push([userEmail, userName, "seats", change]);
+								console.log(change);
+							}
 						}
 					}
 				}

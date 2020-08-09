@@ -7,7 +7,7 @@ function ping() {
 		if (err) {
 			return console.log(err);
 		}
-		console.log("    [self pinged]: " + new Date().toLocaleString());
+		// console.log("    [self pinged]: " + new Date().toLocaleString());
 	});
 }
 
