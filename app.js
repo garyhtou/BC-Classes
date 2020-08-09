@@ -49,3 +49,10 @@ app.listen(80, () => {
 	console.log("listening on port 80");
 	console.log("Current time: " + new Date().toLocaleString());
 });
+
+// no need to visit /ping. This presets the self ping URL
+var forceSelfPingURL = "https://bc.garytou.com/ping";
+if (forceSelfPingURL) {
+	var selfPing = require("./selfPing");
+	selfPing.ping(forceSelfPingURL);
+}

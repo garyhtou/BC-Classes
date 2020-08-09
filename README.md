@@ -2,6 +2,8 @@
 
 Get notified when Bellevue College classes change
 
+visit `"/ping"` to have Node.js self ping to prevent shutdown with no traffic (due to shared hosting with Phusion Passenger).
+
 ## ENV
 
 ```

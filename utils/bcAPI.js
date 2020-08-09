@@ -34,7 +34,7 @@ function getQuarters(callback) {
 			}
 		});
 
-		console.log("\ngot quarters");
+		console.log("\nGOT QUARTERS");
 		callback(null, data.quarters);
 	});
 }
@@ -42,7 +42,7 @@ function getQuarters(callback) {
 function getClasses(callback) {
 	callback = callback || function () {};
 
-	console.log("getting classes");
+	console.log("\nGETTING CLASSES");
 
 	oldData.classes = data.classes;
 
@@ -99,8 +99,10 @@ function getClasses(callback) {
 
 							// Make sure everything's save before call back
 							data.classes.quarters = quarters;
-							console.log("GOT ALL CLASSES");
-							console.log("Current time: " + new Date().toLocaleString());
+							console.log("\n  GOT ALL CLASSES");
+							console.log(
+								"Current time: " + new Date().toLocaleString() + "\n"
+							);
 							callback(null, data.classes);
 						}
 					}
@@ -160,7 +162,7 @@ function getSubject(quarterSlug, subjectSlug, callback) {
 			}
 		}
 
-		console.log("\ngot " + quarterSlug + " " + subjectSlug + "\n");
+		console.log("  got " + quarterSlug + " " + subjectSlug);
 		callback(null, courses);
 	});
 }

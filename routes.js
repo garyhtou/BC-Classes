@@ -3,6 +3,7 @@ var fbAdmin = require("./utils/fbAdmin");
 
 var bcAPI = require("./utils/bcAPI");
 var track = require("./track");
+var selfPing = require("./selfPing");
 
 routes.get("/", function (req, res) {
 	res.render("home", { registrations: fbAdmin.getRegistrations() });
@@ -50,6 +51,11 @@ routes.post("/register", validateAuth, function (req, res) {
 
 routes.get("/login", function (req, res) {
 	res.render("login");
+});
+
+routes.get("/ping", (req, res) => {
+	selfPing.ping(req.protocol + "://" + req.get("host") + req.originalUrl);
+	res.status(200).end();
 });
 
 routes.all("*", function (req, res) {

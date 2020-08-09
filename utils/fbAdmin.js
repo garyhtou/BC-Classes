@@ -120,7 +120,7 @@ function updateRegistrations(callback) {
 		.ref("/registrations/")
 		.on("value", (snapshot) => {
 			registrations = snapshot.val();
-			console.log("Got registrations");
+			console.log("-GOT REGISTRATIONS-");
 			callback(null, registrations);
 		});
 }
