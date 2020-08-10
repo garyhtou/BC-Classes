@@ -58,10 +58,14 @@ routes.get("/login", function (req, res) {
 // 	res.status(200).send("pong");
 // });
 
-routes.all("*", function (req, res) {
-	var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
-	console.log("404 - " + fullUrl);
-	res.status(404).render("404.ejs");
+// routes.all("*", function (req, res) {
+// 	var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
+// 	console.log("404 - " + fullUrl);
+// 	res.status(404).render("404.ejs");
+// });
+
+routes.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname + "/react-frontend/build/index.html"));
 });
 
 // MIDDLEWARE --------------------------------

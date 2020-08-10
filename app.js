@@ -23,11 +23,13 @@ if (!process.env.EMAIL_FROM) {
 
 var express = require("express");
 var bodyParser = require("body-parser");
+var path = require("path");
 
 // Set Up
 var app = express();
 app.set("view engine", "ejs");
 app.use(bodyParser.json());
+app.use("/", express.static(__dirname + "/react-frontend/build"));
 app.use("/", express.static(__dirname + "/public"));
 
 // firebase
@@ -50,7 +52,7 @@ app.use("/", routes);
 // Start app!
 const port = process.env.PORT || 80;
 app.listen(port, () => {
-	console.log("listening on port 80");
+	console.log("listening on port " + port);
 	console.log("Current time: " + new Date().toLocaleString());
 });
 
