@@ -55,8 +55,8 @@ app.listen(port, () => {
 });
 
 // no need to visit /ping. This presets the self ping URL
-var forceSelfPingURL = "https://bc.garytou.com/ping";
-if (forceSelfPingURL) {
-	var selfPing = require("./selfPing");
-	selfPing.ping(forceSelfPingURL);
-}
+// var forceSelfPingURL = "https://bc.garytou.com/ping";
+// if (forceSelfPingURL) {
+// 	var selfPing = require("./selfPing");
+// 	selfPing.ping(forceSelfPingURL);
+// }

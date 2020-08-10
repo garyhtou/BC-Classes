@@ -53,10 +53,10 @@ routes.get("/login", function (req, res) {
 	res.render("login");
 });
 
-routes.get("/ping", (req, res) => {
-	selfPing.ping(req.protocol + "://" + req.get("host") + req.originalUrl);
-	res.status(200).end();
-});
+// routes.get("/ping", (req, res) => {
+// 	selfPing.ping(req.protocol + "://" + req.get("host") + req.originalUrl);
+// 	res.status(200).send("pong");
+// });
 
 routes.all("*", function (req, res) {
 	var fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl;
