@@ -1,9 +1,12 @@
 var bcAPI = require("./bcAPI");
+require("dotenv").config();
 
 // Firebase Admin SDK
 var admin = require("firebase-admin");
 admin.initializeApp({
-	credential: admin.credential.applicationDefault(),
+	credential: admin.credential.cert(
+		JSON.parse(process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT)
+	),
 	databaseURL: "https://bc-classes.firebaseio.com",
 });
 

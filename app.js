@@ -1,8 +1,8 @@
 require("dotenv").config();
 // Check for required env
-if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
 	throw new Error(
-		"Missing value in .env: process.env.GOOGLE_APPLICATION_CREDENTIALS"
+		"Missing value in .env: process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT"
 	);
 }
 if (!process.env.FIREBASE_WEB_CONFIG) {
