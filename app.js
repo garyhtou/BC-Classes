@@ -5,9 +5,6 @@ if (!process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT) {
 		"Missing value in .env: process.env.FIREBASE_ADMIN_SERVICE_ACCOUNT"
 	);
 }
-if (!process.env.FIREBASE_WEB_CONFIG) {
-	throw new Error("Missing value in .env: process.env.FIREBASE_WEB_CONFIG");
-}
 if (!process.env.EMAIL_HOST) {
 	throw new Error("Missing value in .env: process.env.EMAIL_HOST");
 }
