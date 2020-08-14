@@ -9,7 +9,12 @@ class Home extends Component {
 		return (
 			<div className="App">
 				<h1>Project Home</h1>
-				<RegistrationForm />
+				<div>
+					<RegistrationForm />
+				</div>
+				<br />
+				<br />
+				<br />
 				<Button type="primary">Button</Button>
 				<Link to={"./list"}>
 					<button variant="raised">My List</button>

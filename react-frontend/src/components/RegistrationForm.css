@@ -1,0 +1,18 @@
+.reg-steps {
+	padding-right: 50px;
+}
+
+.reg-steps-content {
+	flex-grow: 1;
+}
+
+.reg-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.reg-wrapper {
+	padding: 50px;
+	border-radius: 30px;
+	background-color: white;
+}
