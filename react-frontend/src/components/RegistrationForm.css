@@ -12,7 +12,34 @@
 }
 
 .reg-wrapper {
-	padding: 50px;
-	border-radius: 30px;
-	background-color: white;
+	padding: 7%;
+	border-radius: 2rem;
+	background-color: #121212;
+}
+
+.bottomSpace {
+	margin-bottom: 15%;
+}
+
+.step2-container {
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.step2-side {
+	flex-grow: 1;
+	flex-basis: 0;
+	text-align: center;
+	margin: 1.5%;
+	margin-left: 0;
+}
+
+.step2-button {
+	height: 100%;
+	width: 100%;
+}
+
+.step2-buttonTitle {
+	font-size: 2rem;
 }

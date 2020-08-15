@@ -6,10 +6,10 @@ class ProfilePicture extends Component {
 	constructor() {
 		super();
 		this.state = { photoURL: "" };
-		this.firebaseCall();
 	}
 
-	firebaseCall() {
+	componentDidMount() {
+		//TODO: need to remove listener on dismount
 		Firebase.auth().onAuthStateChanged((user) => {
 			if (user) {
 				this.setState(user.photoURL);
