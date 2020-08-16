@@ -9,7 +9,7 @@
 		"dev-client": "npm start --prefix react-frontend",
 		"dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
 		"build": "cd react-frontend && npm run build",
-		"heroku-postbuild": "cd frontend && npm install --only=dev && npm install && npm run build"
+		"heroku-postbuild": "cd react-frontend && npm install --only=dev && npm install && npm run build"
 	},
 	"repository": {
 		"type": "git",
