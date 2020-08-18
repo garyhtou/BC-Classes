@@ -6,10 +6,11 @@ import Home from "./pages/Home";
 import List from "./pages/List";
 import Settings from "./pages/Settings";
 import ProfilePicture from "../components/ProfilePicture";
+import Nav from "../components/Nav";
 
 import Firebase from "../utils/Firebase";
 
-import { Layout, Menu, Button } from "antd";
+import { Layout } from "antd";
 const { Header, Content, Footer } = Layout;
 
 class App extends Component {
@@ -35,40 +36,13 @@ class App extends Component {
 			<div>
 				<Layout className="layout">
 					<Header>
-						<h1 id="logo">BC Classes</h1>
-						<Menu
-							theme="dark"
-							mode="horizontal"
-							defaultSelectedKeys={["home"]}
-							style={{ float: "right" }}
-						>
-							<Menu.Item key="home">
-								<Link to={"/"}>Home</Link>
-							</Menu.Item>
-							<Menu.Item key="logs">
-								<Link to={"/list"}>Logs</Link>
-							</Menu.Item>
-							<Menu.Item key="about">
-								<Link to={"/list"}>About</Link>
-							</Menu.Item>
-							{this.state.isLoggedIn ? (
-								<Menu.SubMenu title={<ProfilePicture />}>
-									<Menu.Item key="settings">Settings</Menu.Item>
-									<Menu.Divider />
-									<Menu.Item key="logout">Logout</Menu.Item>
-								</Menu.SubMenu>
-							) : (
-								<Menu.Item key="login">Login</Menu.Item>
-							)}
-						</Menu>
+						<Nav />
 					</Header>
-					<Content style={{ padding: "0 50px" }}>
-						<Switch>
-							<Route exact path="/" component={Home} />
-							<Route exact path="/settings" component={Settings} />
-							<Route path="/list" component={List} />
-						</Switch>
-					</Content>
+					<Switch>
+						<Route exact path="/" component={Home} />
+						<Route exact path="/settings" component={Settings} />
+						<Route path="/list" component={List} />
+					</Switch>
 					<Footer style={{ textAlign: "center" }}>
 						<p>
 							BC Classes ©2020 Created by{" "}

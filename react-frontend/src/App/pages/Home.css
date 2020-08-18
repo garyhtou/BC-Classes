@@ -1,0 +1,50 @@
+.home-content {
+	padding: 5% 5% 10% 5%;
+	background-image: url("https://source.unsplash.com/collection/11992729/");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+}
+
+.home-titleContainer {
+	margin-top: 5%;
+	margin-bottom: 5%;
+}
+
+.home-title1 {
+	font-size: 3rem;
+	margin-bottom: 0;
+	line-height: 1;
+	color: blue;
+	font-weight: bold;
+}
+
+.home-title2 {
+	font-size: 3rem;
+	margin: 0;
+	line-height: 1;
+	color: purple;
+	font-weight: bold;
+}
+
+/* tablets and desktop */
+@media only screen and (min-width: 813px) {
+	.home {
+		margin: 0 10%;
+	}
+
+	.home-title1 {
+		font-size: 5rem;
+	}
+	.home-title2 {
+		font-size: 5rem;
+	}
+}
+
+/* phones */
+@media only screen and (max-width: 813px) {
+}
+
+/* portrait phones */
+@media only screen and (max-width: 813px) and (orientation: portrait) {
+}

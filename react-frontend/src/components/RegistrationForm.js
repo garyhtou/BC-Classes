@@ -311,7 +311,8 @@ class RegistrationForm extends Component {
 
 		return (
 			<div className="reg-wrapper">
-				<h3>Register for updates about a class!</h3>
+				{/* <h2>Register for updates about a class!</h2>
+				<br /> */}
 				<div className="reg-container">
 					<div className="reg-steps">
 						<Steps direction="vertical" current={this.state.current}>
@@ -638,17 +639,21 @@ class RegistrationForm extends Component {
 										</>
 									)}
 								</Descriptions>
-								{this.state.formSection === "" ? (
-									<p>
-										You will be notified if a section is added or removed from{" "}
-										{this.state.formCourse}!
-									</p>
-								) : (
-									<p>
-										You will be notified if there are changes to Section{" "}
-										{this.state.formSection} in {this.state.formCourse}!
-									</p>
-								)}
+								<p>
+									<strong>
+										{this.state.formSection === "" ? (
+											<>
+												You will be notified if a section is added or removed
+												from {this.state.formCourse}!
+											</>
+										) : (
+											<>
+												You will be notified if there are changes to Section{" "}
+												{this.state.formSection} in {this.state.formCourse}!
+											</>
+										)}
+									</strong>
+								</p>
 								{this.state.submitError.map((message) => {
 									return (
 										<Alert

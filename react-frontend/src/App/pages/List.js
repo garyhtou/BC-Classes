@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Layout } from "antd";
 
 class List extends Component {
 	// Initialize the state
@@ -32,22 +33,24 @@ class List extends Component {
 		const { list } = this.state;
 
 		return (
-			<div className="App">
-				<h1>List of Items</h1>
-				{/* Check to see if any items are found*/}
-				{Object.keys(list).length ? (
-					<div>
-						{/* Render the list of items */}
-						{list.map((item) => {
-							return <p>{item}</p>;
-						})}
-					</div>
-				) : (
-					<div>
-						<h2>No List Items Found</h2>
-					</div>
-				)}
-			</div>
+			<Layout.Content style={{ padding: "0 50px" }}>
+				<div className="App">
+					<h1>List of Items</h1>
+					{/* Check to see if any items are found*/}
+					{Object.keys(list).length ? (
+						<div>
+							{/* Render the list of items */}
+							{list.map((item) => {
+								return <p>{item}</p>;
+							})}
+						</div>
+					) : (
+						<div>
+							<h2>No List Items Found</h2>
+						</div>
+					)}
+				</div>
+			</Layout.Content>
 		);
 	}
 }
