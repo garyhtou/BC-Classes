@@ -44,7 +44,7 @@ function getClasses(callback) {
 
 	console.log("\nGETTING CLASSES");
 
-	oldData.classes = data.classes;
+	oldData.classes = JSON.parse(JSON.stringify(data.classes));
 
 	var quarters = {};
 
