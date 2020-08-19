@@ -1,1 +1,36 @@
 @import "~antd/dist/antd.dark.css";
+
+.page-titleContainer {
+	margin-top: 5%;
+	margin-bottom: 5%;
+}
+
+.page-title1 {
+	font-size: 3rem;
+	margin-bottom: 0;
+	line-height: 1;
+	color: blue;
+	font-weight: bold;
+}
+
+.page-title2 {
+	font-size: 3rem;
+	margin: 0;
+	line-height: 1;
+	color: purple;
+	font-weight: bold;
+}
+
+/* tablets and desktop */
+@media only screen and (min-width: 813px) {
+	.page-contents {
+		margin: 0 10%;
+	}
+
+	.page-title1 {
+		font-size: 5rem;
+	}
+	.page-title2 {
+		font-size: 5rem;
+	}
+}

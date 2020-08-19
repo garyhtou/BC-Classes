@@ -41,7 +41,7 @@ async function queueEmailChanges(changes) {
 			}
 
 			var location = "";
-			// remove subject with course is in path
+			// remove subject if course is in path
 			if (type == "quarter") {
 				location = locationLast;
 			} else if (type == "subject") {

@@ -3,7 +3,7 @@ import { Route, Switch, Link } from "react-router-dom";
 
 import "./App.css";
 import Home from "./pages/Home";
-import List from "./pages/List";
+import Logs from "./pages/Logs";
 import Settings from "./pages/Settings";
 import ProfilePicture from "../components/ProfilePicture";
 import Nav from "../components/Nav";
@@ -41,7 +41,7 @@ class App extends Component {
 					<Switch>
 						<Route exact path="/" component={Home} />
 						<Route exact path="/settings" component={Settings} />
-						<Route path="/list" component={List} />
+						<Route path="/logs" component={Logs} />
 					</Switch>
 					<Footer style={{ textAlign: "center" }}>
 						<p>

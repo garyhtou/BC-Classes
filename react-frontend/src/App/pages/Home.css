@@ -6,39 +6,8 @@
 	background-position: center;
 }
 
-.home-titleContainer {
-	margin-top: 5%;
-	margin-bottom: 5%;
-}
-
-.home-title1 {
-	font-size: 3rem;
-	margin-bottom: 0;
-	line-height: 1;
-	color: blue;
-	font-weight: bold;
-}
-
-.home-title2 {
-	font-size: 3rem;
-	margin: 0;
-	line-height: 1;
-	color: purple;
-	font-weight: bold;
-}
-
 /* tablets and desktop */
 @media only screen and (min-width: 813px) {
-	.home {
-		margin: 0 10%;
-	}
-
-	.home-title1 {
-		font-size: 5rem;
-	}
-	.home-title2 {
-		font-size: 5rem;
-	}
 }
 
 /* phones */

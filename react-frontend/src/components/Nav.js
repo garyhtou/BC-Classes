@@ -81,10 +81,10 @@ class Nav extends Component {
 										<Link to={"/"}>Home</Link>
 									</Menu.Item>
 									<Menu.Item key="logs">
-										<Link to={"/list"}>Logs</Link>
+										<Link to={"/logs"}>Logs</Link>
 									</Menu.Item>
 									<Menu.Item key="about">
-										<Link to={"/list"}>About</Link>
+										<Link to={"/logs"}>About</Link>
 									</Menu.Item>
 									{this.state.isLoggedIn ? (
 										<Menu.SubMenu title={<ProfilePicture />}>
@@ -110,10 +110,10 @@ class Nav extends Component {
 							<Link to={"/"}>Home</Link>
 						</Menu.Item>
 						<Menu.Item key="logs">
-							<Link to={"/list"}>Logs</Link>
+							<Link to={"/logs"}>Logs</Link>
 						</Menu.Item>
 						<Menu.Item key="about">
-							<Link to={"/list"}>About</Link>
+							<Link to={"/logs"}>About</Link>
 						</Menu.Item>
 						{this.state.isLoggedIn ? (
 							<Menu.SubMenu title={<ProfilePicture />}>
