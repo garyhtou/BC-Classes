@@ -41,6 +41,7 @@ var track = require("./track");
 
 // bcAPI
 var bcAPI = require("./utils/bcAPI");
+bcAPI.update.setDataOnStart();
 
 // Router
 var routes = require("./routes");

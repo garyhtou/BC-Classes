@@ -1,4 +1,5 @@
 var request = require("request");
+var fbAdmin = require("./fbAdmin");
 
 var data = {
 	quarters: {},
@@ -8,6 +9,17 @@ var oldData = {
 	quarters: {},
 	classes: {},
 };
+
+// get existing data from firebase. Only runs on start up
+// this allows front end /data to work instantly
+async function setDataOnStart() {
+	var fbData = await fbAdmin.getStoredData();
+	if (fbData !== null) {
+		data = fbData;
+	} else {
+		console.log('FIREBASE "/DATA/" IS NULL. in getDataOnStart()');
+	}
+}
 
 // TESTING ONLY!!!!!!
 // data.classes = require("../temp").data1;
@@ -44,74 +56,82 @@ function getClasses(callback) {
 
 	console.log("\nGETTING CLASSES");
 
-	oldData.classes = JSON.parse(JSON.stringify(data.classes));
+	fbAdmin.getStoredData().then((snapshot) => {
+		if (snapshot !== null) {
+			oldData.classes = snapshot.classes;
+		} else {
+			console.log('FIREBASE "/DATA/" IS NULL. in getClasses()');
+			oldData.classes = JSON.parse(JSON.stringify(data.classes));
+		}
 
-	var quarters = {};
+		var quarters = {};
 
-	// get quarter slugs
-	Object.keys(data.quarters).map((quarter) => {
-		quarters[quarter] = {};
-	});
-
-	// get subjects per quarter. using function instead of for loops to be synchronous
-	var loopQuarterCounter = 0;
-	var loopQuarters = function (quarterSlugs) {
-		var quarterSlug = quarterSlugs[loopQuarterCounter];
-		var url =
-			"https://www2.bellevuecollege.edu/classes/" +
-			quarterSlug +
-			"/?format=json";
-		request(url, { json: true }, (err, res, body) => {
-			if (err) {
-				console.log("ERROR: GET " + url + "\n" + err);
-			}
-
-			var subjects = body.ViewingSubjects;
-			for (subject of subjects) {
-				quarters[quarterSlug][subject.Slug] = subject;
-			}
-			var subjectSlugs = Object.keys(quarters[quarterSlug]);
-
-			var loopSubjectCounter = 0;
-			var loopSubjects = function (quarterSlug, subjectSlugs) {
-				var subjectSlug = subjectSlugs[loopSubjectCounter];
-
-				getSubject(quarterSlug, subjectSlug, (err, courses) => {
-					if (err) {
-						console.log("ERROR: GET " + url + "\n" + err);
-					}
-
-					quarters[quarterSlug][subjectSlug].Courses = courses;
-
-					// Save data!
-					data.classes.quarters[quarterSlug][subjectSlug] =
-						quarters[quarterSlug][subjectSlug];
-
-					loopSubjectCounter++;
-					if (loopSubjectCounter < subjectSlugs.length) {
-						loopSubjects(quarterSlug, subjectSlugs);
-					} else {
-						loopQuarterCounter++;
-						if (loopQuarterCounter < quarterSlugs.length) {
-							loopQuarters(quarterSlugs);
-						} else {
-							//console.log(JSON.stringify(data.classes));
-
-							// Make sure everything's save before call back
-							data.classes.quarters = quarters;
-							console.log("\n  GOT ALL CLASSES");
-							console.log(
-								"Current time: " + new Date().toLocaleString() + "\n"
-							);
-							callback(null, data.classes);
-						}
-					}
-				});
-			};
-			loopSubjects(quarterSlug, subjectSlugs);
+		// get quarter slugs
+		Object.keys(data.quarters).map((quarter) => {
+			quarters[quarter] = {};
 		});
-	};
-	loopQuarters(Object.keys(quarters));
+
+		// get subjects per quarter. using function instead of for loops to be synchronous
+		var loopQuarterCounter = 0;
+		var loopQuarters = function (quarterSlugs) {
+			var quarterSlug = quarterSlugs[loopQuarterCounter];
+			var url =
+				"https://www2.bellevuecollege.edu/classes/" +
+				quarterSlug +
+				"/?format=json";
+			request(url, { json: true }, (err, res, body) => {
+				if (err) {
+					console.log("ERROR: GET " + url + "\n" + err);
+				}
+
+				var subjects = body.ViewingSubjects;
+				for (subject of subjects) {
+					quarters[quarterSlug][subject.Slug] = subject;
+				}
+				var subjectSlugs = Object.keys(quarters[quarterSlug]);
+
+				var loopSubjectCounter = 0;
+				var loopSubjects = function (quarterSlug, subjectSlugs) {
+					var subjectSlug = subjectSlugs[loopSubjectCounter];
+
+					getSubject(quarterSlug, subjectSlug, (err, courses) => {
+						if (err) {
+							console.log("ERROR: GET " + url + "\n" + err);
+						}
+
+						quarters[quarterSlug][subjectSlug].Courses = courses;
+
+						// Save data!
+						data.classes.quarters[quarterSlug][subjectSlug] =
+							quarters[quarterSlug][subjectSlug];
+
+						loopSubjectCounter++;
+						if (loopSubjectCounter < subjectSlugs.length) {
+							loopSubjects(quarterSlug, subjectSlugs);
+						} else {
+							loopQuarterCounter++;
+							if (loopQuarterCounter < quarterSlugs.length) {
+								loopQuarters(quarterSlugs);
+							} else {
+								//console.log(JSON.stringify(data.classes));
+
+								// Make sure everything's save before call back and replace removed quarters
+								data.classes.quarters = quarters;
+								fbAdmin.storeData(data);
+								console.log("\n  GOT ALL CLASSES");
+								console.log(
+									"Current time: " + new Date().toLocaleString() + "\n"
+								);
+								callback(null, data.classes);
+							}
+						}
+					});
+				};
+				loopSubjects(quarterSlug, subjectSlugs);
+			});
+		};
+		loopQuarters(Object.keys(quarters));
+	});
 }
 
 function getSubject(quarterSlug, subjectSlug, callback) {
@@ -242,6 +262,7 @@ var publicMethods = {
 	updateClasses: getClasses,
 	updateSeats: getSeats,
 	updateAllSeats: getAllSeats,
+	setDataOnStart: setDataOnStart,
 };
 
 module.exports.update = publicMethods;

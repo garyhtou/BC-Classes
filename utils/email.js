@@ -66,12 +66,28 @@ async function queueEmailChanges(changes) {
 				typeCap[0] = typeCap[0].toUpperCase();
 				typeCap = typeCap.join("");
 
+				var changeNew;
+				var changeOld;
+
+				if (type === "instructor") {
+					if (change[1][0] === "") {
+						changeNew = "Staff";
+					} else {
+						changeNew = change[1][0];
+					}
+					if (change[1][1] === "") {
+						changeOld = "Staff";
+					} else {
+						changeOld = change[1][1];
+					}
+				}
+
 				htmlMessage =
 					typeCap +
 					" has changed from <b>" +
-					change[1][0] +
+					changeOld +
 					"</b> to <b>" +
-					change[1][1] +
+					changeNew +
 					"</b> for " +
 					location +
 					".";
@@ -79,15 +95,15 @@ async function queueEmailChanges(changes) {
 				textMessage =
 					typeCap +
 					" has changed from " +
-					change[1][0] +
+					changeOld +
 					" to " +
-					change[1][1] +
+					changeNew +
 					" for " +
 					location +
 					".";
 
 				subject +=
-					typeCap + " has changed from " + change[1][0] + " to " + change[1][1];
+					typeCap + " has changed from " + changeOld + " to " + changeNew;
 			} else if (change[0] == "added") {
 				htmlMessage =
 					"<b>" + change[1] + "</b> has been <b>added</b> to " + location + ".";

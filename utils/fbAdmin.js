@@ -158,9 +158,27 @@ function getUserInfo(uid) {
 	});
 }
 
+function storeData(data) {
+	admin.database().ref("/data/").set(data);
+}
+
+async function getStoredData() {
+	return new Promise((resolve, reject) => {
+		admin
+			.database()
+			.ref("/data/")
+			.once("value")
+			.then((snapshot) => {
+				resolve(snapshot.val());
+			});
+	});
+}
+
 module.exports.admin = admin;
 module.exports.getRegistrations = getRegistrations;
 module.exports.addRegistration = addRegistration;
 module.exports.addChanges = addChanges;
 module.exports.getUserInfo = getUserInfo;
 module.exports.updateRegistrations = updateRegistrations;
+module.exports.storeData = storeData;
+module.exports.getStoredData = getStoredData;
