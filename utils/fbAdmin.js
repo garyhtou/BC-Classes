@@ -158,8 +158,8 @@ function getUserInfo(uid) {
 	});
 }
 
-function storeData(data) {
-	admin.database().ref("/data/").set(data);
+function storeData() {
+	admin.database().ref("/data/").set(bcAPI.getData());
 }
 
 async function getStoredData() {

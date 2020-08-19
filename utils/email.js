@@ -136,6 +136,10 @@ async function queueEmailChanges(changes) {
 				if (emailLoopCounter < emails.length) {
 					emailLoop(emails);
 				} else {
+					// Store data AFTER changes are sent. This will ensure that emails are sent even if
+					// server goes down while sending emails. If that does happen, some will recieve emails twice
+					fbAdmin.storeData();
+
 					return console.log("DONE SENDING EMAILS!");
 				}
 			});

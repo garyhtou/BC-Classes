@@ -117,7 +117,6 @@ function getClasses(callback) {
 
 								// Make sure everything's save before call back and replace removed quarters
 								data.classes.quarters = quarters;
-								fbAdmin.storeData(data);
 								console.log("\n  GOT ALL CLASSES");
 								console.log(
 									"Current time: " + new Date().toLocaleString() + "\n"
