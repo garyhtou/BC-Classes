@@ -124,6 +124,8 @@ function findChanges(callback) {
 		changes = newChanges;
 
 		fbAdmin.addChanges(changes);
+		fbAdmin.storeData();
+
 		console.log("DONE finding changes");
 
 		if (JSON.stringify(newChanges) != JSON.stringify(changesTemplate)) {
