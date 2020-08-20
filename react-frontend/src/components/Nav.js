@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Popover } from "antd";
+import { Menu } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import ProfilePicture from "../components/ProfilePicture";
 import "./Nav.css";

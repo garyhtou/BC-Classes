@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Layout, Timeline, List, Avatar, Spin } from "antd";
+import { Layout, Timeline, List, Spin } from "antd";
 import {
 	PlusCircleOutlined,
 	MinusCircleOutlined,
@@ -41,10 +41,11 @@ class Logs extends Component {
 					var time = new Date(pushObj.time).toLocaleTimeString("en-US", {
 						timeStyle: "short",
 					});
-					var fullDate = date + " | " + time;
+					var fullDate = date + " at " + time;
 
-					var changeItem = {
+					var changeItemTemplate = {
 						time: fullDate,
+						change: true,
 						quarters: [],
 						subjects: [],
 						courses: [],
@@ -53,27 +54,36 @@ class Logs extends Component {
 						seats: [],
 					};
 
+					var noChangeTemplate = {
+						time: fullDate,
+						change: false,
+					};
+
+					var changeItem = JSON.parse(JSON.stringify(changeItemTemplate));
+
 					for (var topic in pushObj.changes) {
 						var topicObj = pushObj.changes[topic];
 
 						for (var topicItem in topicObj) {
 							var topicItemObj = topicObj[topicItem];
+							console.log(topic);
+							console.log(topicItemObj);
 
 							var locationLast = topicItemObj[2][topicItemObj[2].length - 1];
-							if (locationLast == undefined) {
+							if (locationLast === undefined) {
 								locationLast = "avalaible quarters";
 							}
 
 							var location = "";
 							// remove subject if course is in path
-							if (topic == "quarter") {
+							if (topic === "quarter") {
 								location = locationLast;
-							} else if (topic == "subject") {
+							} else if (topic === "subject") {
 								location = topicItemObj[2].join(", ");
 							} else if (
-								topic == "section" ||
-								topic == "instructor" ||
-								topic == "seats"
+								topic === "section" ||
+								topic === "instructor" ||
+								topic === "seats"
 							) {
 								var locListNoSubject = [...topicItemObj[2]];
 								locListNoSubject[3] = "section " + locListNoSubject[3];
@@ -86,60 +96,67 @@ class Logs extends Component {
 								location = locListNoSubject.join(", ");
 							}
 
-							if (topicItemObj[0] == "changed") {
-								var changeNew;
-								var changeOld;
+							if (topicItemObj[0] === "changed") {
+								var changeNew = topicItemObj[1][0];
+								var changeOld = topicItemObj[1][1];
 
 								if (topic === "instructor") {
 									if (topicItemObj[1][0] === "") {
 										changeNew = "Staff";
-									} else {
-										changeNew = topicItemObj[1][0];
 									}
 									if (topicItemObj[1][1] === "") {
 										changeOld = "Staff";
-									} else {
-										changeOld = topicItemObj[1][1];
 									}
 								}
 
 								changeItem[topic].push([
 									"changed",
-									"Changed from <b>" +
+									"Changed from <strong>" +
 										changeOld +
-										"</b> to <b>" +
+										"</strong> to <strong>" +
 										changeNew +
-										"</b> for " +
+										"</strong> for " +
 										location +
 										".",
 								]);
-							} else if (topicItemObj[0] == "added") {
+							} else if (topicItemObj[0] === "added") {
 								changeItem[topic].push([
 									"added",
-									"<b>" +
+									"<strong>" +
 										topicItemObj[1] +
-										"</b> was <b>added</b> to " +
+										"</strong> was <strong>added</strong> to " +
 										location +
 										".",
 								]);
-							} else if (topicItemObj[0] == "removed") {
+							} else if (topicItemObj[0] === "removed") {
 								changeItem[topic].push([
 									"removed",
-									"<b>" +
+									"<strong>" +
 										topicItemObj[1] +
-										"</b> has been <b>removed</b> from " +
+										"</strong> was <strong>removed</strong> from " +
 										location +
 										".",
 								]);
 							}
+							console.log(changeItem[topic][changeItem[topic].length - 1]);
 						}
 					}
 
-					data.push(changeItem);
+					if (
+						JSON.stringify(changeItem) !== JSON.stringify(changeItemTemplate)
+					) {
+						data.push(changeItem);
+					} else {
+						data.push(noChangeTemplate);
+					}
 				}
 			}
 			console.log(data);
-			this.setState({ loading: false, data: data, fbListener: listener });
+			this.setState({
+				loading: false,
+				data: data.reverse(),
+				fbListener: listener,
+			});
 		});
 	}
 
@@ -160,6 +177,7 @@ class Logs extends Component {
 								<Spin size="large" tip="Loading..." />
 							</div>
 						) : (
+							//TODO REVERSE
 							<List
 								pagination={{
 									onChange: (page) => {
@@ -184,71 +202,59 @@ class Logs extends Component {
 										<List.Item.Meta title={item.time} />
 										{Object.keys(item).map((key) => {
 											var topic = item[key];
-											if (topic.length != 0 && key !== "time") {
+											if (
+												topic.length !== 0 &&
+												key !== "time" &&
+												key !== "change"
+											) {
+												// console.log(key);
+												// console.log(topic);
 												return (
 													<>
 														<p className="logs-topicName">
 															{this.state.names[key]}
 														</p>
 														<Timeline mode="left">
-															{topic.map((item) => {
+															{topic.map((message) => {
 																return (
-																	<>
-																		<Timeline.Item
-																			dot={function () {
-																				if (topic[0] === "added") {
-																					return (
-																						<PlusCircleOutlined className="logs-timelineDotAdd" />
-																					);
-																				} else if (topic[0] === "changed") {
-																					return (
-																						<MinusCircleOutlined className="logs-timelineDotChange" />
-																					);
-																				} else if (topic[0] === "removed") {
-																					return (
-																						<CloseCircleOutlined className="logs-timelineDotRemove" />
-																					);
-																				}
-																			}}
-																		>
-																			{topic[1]}
-																		</Timeline.Item>
-																	</>
+																	<Timeline.Item
+																		dot={(function () {
+																			if (message[0] === "added") {
+																				return (
+																					<PlusCircleOutlined className="logs-timelineDotAdd" />
+																				);
+																			} else if (message[0] === "changed") {
+																				return (
+																					<MinusCircleOutlined className="logs-timelineDotChange" />
+																				);
+																			} else if (message[0] === "removed") {
+																				return (
+																					<CloseCircleOutlined className="logs-timelineDotRemove" />
+																				);
+																			}
+																		})()}
+																	>
+																		{
+																			<>
+																				<div
+																					dangerouslySetInnerHTML={{
+																						__html: message[1],
+																					}}
+																				></div>
+																			</>
+																		}
+																	</Timeline.Item>
 																);
 															})}
 														</Timeline>
 													</>
 												);
+											} else if (key === "change" && item.change === false) {
+												return <p>No changes.</p>;
 											} else {
-												return;
+												return <></>;
 											}
 										})}
-
-										<p>Seats</p>
-										<Timeline mode="left">
-											<Timeline.Item
-												dot={
-													<PlusCircleOutlined className="logs-timelineDotAdd" />
-												}
-											>
-												Seats for 1111 change from <strong>1</strong> to{" "}
-												<strong>0</strong> (Fall 2020, MATH 152)
-											</Timeline.Item>
-											<Timeline.Item
-												dot={
-													<MinusCircleOutlined className="logs-timelineDotChange" />
-												}
-											>
-												sfasdf
-											</Timeline.Item>
-											<Timeline.Item
-												dot={
-													<CloseCircleOutlined className="logs-timelineDotRemove" />
-												}
-											>
-												sfasdf
-											</Timeline.Item>
-										</Timeline>
 									</List.Item>
 								)}
 							></List>

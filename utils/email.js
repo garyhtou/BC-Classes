@@ -66,19 +66,15 @@ async function queueEmailChanges(changes) {
 				typeCap[0] = typeCap[0].toUpperCase();
 				typeCap = typeCap.join("");
 
-				var changeNew;
-				var changeOld;
+				var changeNew = change[1][0];
+				var changeOld = change[1][1];
 
 				if (type === "instructor") {
 					if (change[1][0] === "") {
 						changeNew = "Staff";
-					} else {
-						changeNew = change[1][0];
 					}
 					if (change[1][1] === "") {
 						changeOld = "Staff";
-					} else {
-						changeOld = change[1][1];
 					}
 				}
 
