@@ -25,9 +25,28 @@
 	color: red;
 }
 
+/* .logs-timelineDotSeeAll {
+	color: blue;
+}
+
+.logs-timelineDotHide {
+	color: blue;
+} */
+
+.log-timeTitle .ant-list-item-meta-title {
+	font-size: 1.5em;
+	font-weight: bold;
+	/* text-align: center; */
+}
+
 .logs-topicName {
 	font-size: 1.2em;
 	font-weight: bold;
+}
+
+.log-seeAll {
+	font-style: italic;
+	cursor: pointer;
 }
 
 /* tablets and desktop */

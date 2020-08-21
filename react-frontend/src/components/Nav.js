@@ -62,9 +62,11 @@ class Nav extends Component {
 								onMouseLeave={() => {
 									this.navToogle(true);
 								}}
-								// on mobile, not able to reopen after click
-								// onClick={this.navToogle}
+								onMouseDown={() => {
+									this.navToogle();
+								}}
 								className="nav-collapsedIcon"
+								style={{ cursor: "pointer" }}
 							/>
 						</div>
 						{this.state.navClosed ? (
