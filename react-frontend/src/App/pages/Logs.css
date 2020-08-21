@@ -14,15 +14,23 @@
 }
 
 .logs-timelineDotAdd {
-	color: green;
+	color: darkgreen;
 }
 
 .logs-timelineDotChange {
 	color: yellow;
 }
 
-.logs-timelineDotRemove {
+.logs-timelineDotChangeUp {
+	color: green;
+}
+
+.logs-timelineDotChangeDown {
 	color: red;
+}
+
+.logs-timelineDotRemove {
+	color: darkred;
 }
 
 /* .logs-timelineDotSeeAll {

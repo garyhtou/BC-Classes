@@ -122,6 +122,8 @@ class Logs extends Component {
 										"</strong> for " +
 										location +
 										".",
+									changeNew,
+									changeOld,
 								]);
 							} else if (topicItemObj[0] === "added") {
 								changeItem[topic].push([
@@ -235,6 +237,17 @@ class Logs extends Component {
 																						<PlusCircleOutlined className="logs-timelineDotAdd" />
 																					);
 																				} else if (message[0] === "changed") {
+																					if (key === "seats") {
+																						if (message[3] > message[4]) {
+																							return (
+																								<UpCircleOutlined className="logs-timelineDotChangeUp" />
+																							);
+																						} else {
+																							return (
+																								<DownCircleOutlined className="logs-timelineDotChangeDown" />
+																							);
+																						}
+																					}
 																					return (
 																						<MinusCircleOutlined className="logs-timelineDotChange" />
 																					);
@@ -267,6 +280,17 @@ class Logs extends Component {
 																							<PlusCircleOutlined className="logs-timelineDotAdd" />
 																						);
 																					} else if (message[0] === "changed") {
+																						if (key === "seats") {
+																							if (message[3] > message[4]) {
+																								return (
+																									<UpCircleOutlined className="logs-timelineDotChangeUp" />
+																								);
+																							} else {
+																								return (
+																									<DownCircleOutlined className="logs-timelineDotChangeDown" />
+																								);
+																							}
+																						}
 																						return (
 																							<MinusCircleOutlined className="logs-timelineDotChange" />
 																						);
