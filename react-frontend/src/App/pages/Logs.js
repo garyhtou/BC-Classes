@@ -338,7 +338,7 @@ class Logs extends Component {
 																		</p>
 																	</Timeline.Item>
 																) : (
-																	<></>
+																	""
 																)}
 															</Timeline>
 														</>

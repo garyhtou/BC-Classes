@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
+import Firebase from "../utils/Firebase";
 import ProfilePicture from "../components/ProfilePicture";
 import "./Nav.css";
 
@@ -23,6 +24,14 @@ class Nav extends Component {
 
 	componentDidMount() {
 		this.navCollapseQuery.addListener(this.updateNavCollapse);
+
+		Firebase.auth().onAuthStateChanged((user) => {
+			if (user) {
+				this.setState({ isLoggedIn: true });
+			} else {
+				this.setState({ isLoggedIn: false });
+			}
+		});
 	}
 
 	componentWillUnmount() {
@@ -56,12 +65,14 @@ class Nav extends Component {
 					<Menu theme="dark" style={{ float: "right" }}>
 						<div style={{ float: "right" }}>
 							<MenuOutlined
-								onMouseEnter={() => {
-									this.navToogle(false);
-								}}
-								onMouseLeave={() => {
-									this.navToogle(true);
-								}}
+								//onMouseLeave blocks clicking on links on mobile
+
+								// onMouseEnter={() => {
+								// 	this.navToogle(false);
+								// }}
+								// onMouseLeave={() => {
+								// 	this.navToogle(true);
+								// }}
 								onMouseDown={() => {
 									this.navToogle();
 								}}
@@ -86,7 +97,7 @@ class Nav extends Component {
 										<Link to={"/logs"}>Logs</Link>
 									</Menu.Item>
 									<Menu.Item key="about">
-										<Link to={"/logs"}>About</Link>
+										<Link to={"/about"}>About</Link>
 									</Menu.Item>
 									{this.state.isLoggedIn ? (
 										<Menu.SubMenu title={<ProfilePicture />}>
@@ -115,7 +126,7 @@ class Nav extends Component {
 							<Link to={"/logs"}>Logs</Link>
 						</Menu.Item>
 						<Menu.Item key="about">
-							<Link to={"/logs"}>About</Link>
+							<Link to={"/about"}>About</Link>
 						</Menu.Item>
 						{this.state.isLoggedIn ? (
 							<Menu.SubMenu title={<ProfilePicture />}>
