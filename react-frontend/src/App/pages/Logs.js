@@ -176,6 +176,43 @@ class Logs extends Component {
 		this.setState({ [id]: !this.state[id] });
 	}
 
+	changeItem(message, type) {
+		return (
+			<Timeline.Item
+				dot={(function () {
+					if (message[0] === "added") {
+						return <PlusCircleOutlined className="logs-timelineDotAdd" />;
+					} else if (message[0] === "changed") {
+						if (type === "seats") {
+							if (parseInt(message[3]) > parseInt(message[4])) {
+								return (
+									<UpCircleOutlined className="logs-timelineDotChangeUp" />
+								);
+							} else {
+								return (
+									<DownCircleOutlined className="logs-timelineDotChangeDown" />
+								);
+							}
+						}
+						return <MinusCircleOutlined className="logs-timelineDotChange" />;
+					} else if (message[0] === "removed") {
+						return <CloseCircleOutlined className="logs-timelineDotRemove" />;
+					}
+				})()}
+			>
+				{
+					<>
+						<div
+							dangerouslySetInnerHTML={{
+								__html: message[2],
+							}}
+						></div>
+					</>
+				}
+			</Timeline.Item>
+		);
+	}
+
 	render() {
 		return (
 			<Layout.Content className="logs-content">
@@ -229,95 +266,11 @@ class Logs extends Component {
 															</p>
 															<Timeline mode="left">
 																{topic.slice(0, 3).map((message) => {
-																	return (
-																		<Timeline.Item
-																			dot={(function () {
-																				if (message[0] === "added") {
-																					return (
-																						<PlusCircleOutlined className="logs-timelineDotAdd" />
-																					);
-																				} else if (message[0] === "changed") {
-																					if (key === "seats") {
-																						if (
-																							parseInt(message[3]) >
-																							parseInt(message[4])
-																						) {
-																							return (
-																								<UpCircleOutlined className="logs-timelineDotChangeUp" />
-																							);
-																						} else {
-																							return (
-																								<DownCircleOutlined className="logs-timelineDotChangeDown" />
-																							);
-																						}
-																					}
-																					return (
-																						<MinusCircleOutlined className="logs-timelineDotChange" />
-																					);
-																				} else if (message[0] === "removed") {
-																					return (
-																						<CloseCircleOutlined className="logs-timelineDotRemove" />
-																					);
-																				}
-																			})()}
-																		>
-																			{
-																				<>
-																					<div
-																						dangerouslySetInnerHTML={{
-																							__html: message[2],
-																						}}
-																					></div>
-																				</>
-																			}
-																		</Timeline.Item>
-																	);
+																	return this.changeItem(message, key);
 																})}
 																{topic.slice(3).map((message) => {
 																	if (this.state[message[1]]) {
-																		return (
-																			<Timeline.Item
-																				dot={(function () {
-																					if (message[0] === "added") {
-																						return (
-																							<PlusCircleOutlined className="logs-timelineDotAdd" />
-																						);
-																					} else if (message[0] === "changed") {
-																						if (key === "seats") {
-																							if (
-																								parseInt(message[3]) >
-																								parseInt(message[4])
-																							) {
-																								return (
-																									<UpCircleOutlined className="logs-timelineDotChangeUp" />
-																								);
-																							} else {
-																								return (
-																									<DownCircleOutlined className="logs-timelineDotChangeDown" />
-																								);
-																							}
-																						}
-																						return (
-																							<MinusCircleOutlined className="logs-timelineDotChange" />
-																						);
-																					} else if (message[0] === "removed") {
-																						return (
-																							<CloseCircleOutlined className="logs-timelineDotRemove" />
-																						);
-																					}
-																				})()}
-																			>
-																				{
-																					<>
-																						<div
-																							dangerouslySetInnerHTML={{
-																								__html: message[2],
-																							}}
-																						></div>
-																					</>
-																				}
-																			</Timeline.Item>
-																		);
+																		return this.changeItem(message, key);
 																	}
 																	return;
 																})}
