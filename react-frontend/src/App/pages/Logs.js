@@ -238,7 +238,10 @@ class Logs extends Component {
 																					);
 																				} else if (message[0] === "changed") {
 																					if (key === "seats") {
-																						if (message[3] > message[4]) {
+																						if (
+																							parseInt(message[3]) >
+																							parseInt(message[4])
+																						) {
 																							return (
 																								<UpCircleOutlined className="logs-timelineDotChangeUp" />
 																							);
@@ -281,7 +284,10 @@ class Logs extends Component {
 																						);
 																					} else if (message[0] === "changed") {
 																						if (key === "seats") {
-																							if (message[3] > message[4]) {
+																							if (
+																								parseInt(message[3]) >
+																								parseInt(message[4])
+																							) {
 																								return (
 																									<UpCircleOutlined className="logs-timelineDotChangeUp" />
 																								);
