@@ -61,7 +61,7 @@ class Login extends Component {
 			if (user) {
 				this.setState({ loggedIn: true, displayName: user.displayName });
 			} else {
-				this.setState({ loggedIn: false, displayName: user.displayName });
+				this.setState({ loggedIn: false });
 			}
 		});
 	}

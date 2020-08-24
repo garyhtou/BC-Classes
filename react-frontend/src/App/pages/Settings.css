@@ -4,13 +4,13 @@
 
 .settings-section {
 	padding: 7%;
-	padding-bottom: 10%;
 	border-radius: 2rem;
+	/* MAKE RANDOM COLOR */
 	background-color: #1f1f1f;
 	margin-bottom: 5%;
 }
 
-.profile {
+.settings-profile {
 	display: flex;
 }
 
@@ -28,6 +28,10 @@
 
 .profile-infoName {
 	font-size: 3em;
+}
+
+.settings-reg .ant-list-item {
+	border-width: 0;
 }
 
 /* tablets and desktop */

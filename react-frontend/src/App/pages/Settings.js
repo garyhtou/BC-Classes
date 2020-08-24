@@ -1,40 +1,65 @@
 import React, { Component } from "react";
-import { Layout, Spin } from "antd";
+import { Layout, Spin, Empty, List } from "antd";
 import "./Settings.css";
 import ProfilePicture from "../../components/ProfilePicture";
 import Firebase from "../../utils/Firebase";
+import RegItem from "../../components/RegItem";
 
 class Settings extends Component {
 	constructor() {
 		super();
 		this.state = {
 			loggedIn: "",
+			regLoading: true,
 		};
 	}
 
 	componentDidMount() {
 		//TODO: need to remove listener on dismount
-		Firebase.auth().onAuthStateChanged((user) => {
-			if (user) {
-				var lastSignInTime = Date(user.metadata.lastSignInTime);
-				this.setState({ lastSignInTime: lastSignInTime });
-				var uid = user.uid;
-				Firebase.database()
-					.ref("/users/" + uid)
-					.once(
-						"value",
-						function (snapshot) {
-							this.setState({
-								name: snapshot.val().name,
-								notifEmail: snapshot.val().email,
-							});
-						}.bind(this)
-					);
-				this.setState({ loggedIn: true });
-			} else {
-				this.setState({ loggedIn: false });
-			}
-		});
+		Firebase.auth().onAuthStateChanged(
+			function (user) {
+				if (user) {
+					var lastSignInTime = Date(user.metadata.lastSignInTime);
+					this.setState({ lastSignInTime: lastSignInTime });
+					var uid = user.uid;
+					this.setState({ uid: uid });
+					Firebase.database()
+						.ref("/registrations/" + uid)
+						.on(
+							"value",
+							function (snapshot) {
+								console.log(snapshot.val());
+
+								if (snapshot.val() === null) {
+									this.setState({
+										registrations: [],
+										regLoading: false,
+									});
+								} else {
+									this.setState({
+										registrations: snapshot.val(),
+										regLoading: false,
+									});
+								}
+							}.bind(this)
+						);
+					Firebase.database()
+						.ref("/users/" + uid)
+						.on(
+							"value",
+							function (snapshot) {
+								this.setState({
+									name: snapshot.val().name,
+									notifEmail: snapshot.val().email,
+								});
+							}.bind(this)
+						);
+					this.setState({ loggedIn: true });
+				} else {
+					this.setState({ loggedIn: false });
+				}
+			}.bind(this)
+		);
 	}
 
 	render() {
@@ -46,10 +71,7 @@ class Settings extends Component {
 					</div>
 					{this.state.loggedIn === true ? (
 						<>
-							<div className="settings-section">
-								<h1>Registrations</h1>
-							</div>
-							<div className="settings-section profile">
+							<div className="settings-section settings-profile">
 								<div className="profile-flexItem profile-profilePicture">
 									<ProfilePicture size={200} />
 								</div>
@@ -60,9 +82,39 @@ class Settings extends Component {
 										<strong>Notification Email:</strong> {this.state.notifEmail}
 									</p>
 									<p className="profile-infoOther">
-										<strong>Recent Login:</strong> {this.state.lastSignInTime}
+										<strong>Last Login:</strong> {this.state.lastSignInTime}
 									</p>
 								</div>
+							</div>
+							<div className="settings-reg">
+								<h1>Registrations</h1>
+								{this.state.regLoading ? (
+									<Spin />
+								) : (
+									<>
+										{this.state.registrations.length === 0 ? (
+											<Empty />
+										) : (
+											<>
+												<List>
+													{Object.keys(this.state.registrations).map(
+														(pushKey) => {
+															return (
+																<List.Item>
+																	<RegItem
+																		uid={this.state.uid}
+																		pushKey={pushKey}
+																		data={this.state.registrations[pushKey]}
+																	/>
+																</List.Item>
+															);
+														}
+													)}
+												</List>
+											</>
+										)}
+									</>
+								)}
 							</div>
 						</>
 					) : this.state.loggedIn === false ? (
