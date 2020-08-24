@@ -10,8 +10,10 @@ import {
 	InputNumber,
 	Descriptions,
 	Alert,
+	message,
 } from "antd";
 import Firebase from "../utils/Firebase";
+import Login from "./Login";
 import "./RegistrationForm.css";
 
 class RegistrationForm extends Component {
@@ -22,6 +24,7 @@ class RegistrationForm extends Component {
 			isLoaded: false,
 			error: null,
 			submitError: [],
+			loginModalVisible: false,
 		};
 		this.submitForm = this.submitForm.bind(this);
 		this.addSubmitError = this.addSubmitError.bind(this);
@@ -64,6 +67,13 @@ class RegistrationForm extends Component {
 		this.setState({ current: prevStep });
 	}
 
+	openLoginModal() {
+		this.setState({ loginModalVisible: true });
+	}
+	closeLoginModal() {
+		this.setState({ loginModalVisible: false });
+	}
+
 	submitForm() {
 		this.setState({ submitLoading: true });
 		// create object
@@ -83,29 +93,44 @@ class RegistrationForm extends Component {
 		if (user) {
 			user
 				.getIdToken(/* forceRefresh */ true)
-				.then(function (idToken) {
-					//send request
-					fetch(url, {
-						method: method,
-						headers: { Authorization: "Bearer " + idToken },
-						body: JSON.stringify(formData),
-					})
-						.then((response) => response.json())
-						.then((data) => {
-							this.setState({ submitLoading: false });
-							this.addSubmitError(data);
+				.then(
+					function (idToken) {
+						//send request
+						fetch(url, {
+							method: method,
+							headers: {
+								Authorization: "Bearer " + idToken,
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify(formData),
+						}).then((response) => {
+							if (response.ok) {
+								//reg success from server
+								this.setState({ submitLoading: false });
+								message.success("Success!", 5);
+								this.props.remountMe();
+							} else {
+								//reg error from server
+								response.text().then((errorMessage) => {
+									this.setState({ submitLoading: false });
+									console.log(errorMessage);
+									this.addSubmitError(errorMessage);
+								});
+							}
 						});
-				})
-				.catch(function (error) {
-					this.setState({ submitLoading: false });
-					this.addSubmitError(error);
-				});
+					}.bind(this)
+				)
+				.catch(
+					function (error) {
+						//error getting id token
+						this.setState({ submitLoading: false });
+						this.addSubmitError(error);
+					}.bind(this)
+				);
 		} else {
-			setTimeout(() => {
-				this.setState({ submitLoading: false });
-				this.addSubmitError("Not signed in");
-				// TODO SIGN IN/UP MODAL
-			}, 2000);
+			this.setState({ submitLoading: false });
+			this.addSubmitError("Not signed in");
+			this.openLoginModal();
 		}
 	}
 
@@ -209,7 +234,7 @@ class RegistrationForm extends Component {
 		};
 
 		const onStep2SelectSection = () => {
-			this.setState({ notificationType: "section" });
+			this.setState({ notificationType: "section", submitError: [] });
 		};
 
 		const onStep2SelectCourse = () => {
@@ -217,7 +242,7 @@ class RegistrationForm extends Component {
 			this.setState({ formInstructor: false });
 			this.setState({ formSeats: -1 });
 			this.next();
-			this.setState({ notificationType: "course" });
+			this.setState({ notificationType: "course", submitError: [] });
 		};
 
 		const onSectionChange = (value) => {
@@ -291,6 +316,11 @@ class RegistrationForm extends Component {
 					? false
 					: this.state.formSeatsCheckbox;
 
+			this.setState({
+				formInstructor: instructor,
+				formSeatsCheckbox: seatsCheckbox,
+			});
+
 			if (!instructor && !seatsCheckbox) {
 				this.setState({ seatsCheckboxValidateStatus: "error" });
 				this.setState({
@@ -300,9 +330,15 @@ class RegistrationForm extends Component {
 				error = true;
 			}
 
-			if (this.state.formSeats === undefined) {
-				this.setState({ formSeats: 5 });
+			if (seatsCheckbox) {
+				if (this.state.formSeats === undefined || this.state.formSeats === -1) {
+					this.setState({ formSeats: 5 });
+				}
+			} else {
+				this.setState({ formSeats: -1 });
 			}
+
+			this.setState({ submitError: [] });
 
 			if (!error) {
 				this.next();
@@ -381,7 +417,7 @@ class RegistrationForm extends Component {
 															const name = data[0];
 															const value = data[1];
 															return (
-																<Select.Option value={value}>
+																<Select.Option value={value} key={value}>
 																	{name}
 																</Select.Option>
 															);
@@ -403,14 +439,17 @@ class RegistrationForm extends Component {
 													<Select showSearch onChange={onSubjectChange}>
 														{this.state.subjects === undefined ||
 														this.state.quarterValidateStatus === "error" ? (
-															<Select.Option disabled>
+															<Select.Option disabled key="Select a Quarter">
 																Select a Quarter
 															</Select.Option>
 														) : (
 															<>
 																{this.state.subjects.map((subject) => {
 																	return (
-																		<Select.Option value={subject}>
+																		<Select.Option
+																			value={subject}
+																			key={subject}
+																		>
 																			{subject}
 																		</Select.Option>
 																	);
@@ -434,14 +473,14 @@ class RegistrationForm extends Component {
 													<Select showSearch onChange={onCourseChange}>
 														{this.state.courses === undefined ||
 														this.state.subjectValidateStatus === "error" ? (
-															<Select.Option disabled>
+															<Select.Option disabled key="Select a Subject">
 																Select a Subject
 															</Select.Option>
 														) : (
 															<>
 																{this.state.courses.map((course) => {
 																	return (
-																		<Select.Option value={course}>
+																		<Select.Option value={course} key={course}>
 																			{course}
 																		</Select.Option>
 																	);
@@ -486,8 +525,11 @@ class RegistrationForm extends Component {
 													</p>
 												</Button>
 											</div>
-											<div className="step2-side" onClick={onStep2SelectCourse}>
-												<Button className="step2-button">
+											<div className="step2-side">
+												<Button
+													className="step2-button"
+													onClick={onStep2SelectCourse}
+												>
 													<p className="step2-buttonTitle">
 														<strong>Addition</strong> / <strong>Removal</strong>{" "}
 														of Sections in {this.state.formCourse}
@@ -527,7 +569,9 @@ class RegistrationForm extends Component {
 											<Select onChange={onSectionChange} showSearch>
 												{this.state.sections.map((data) => {
 													return (
-														<Select.Option value={data}>{data}</Select.Option>
+														<Select.Option value={data} key={data}>
+															{data}
+														</Select.Option>
 													);
 												})}
 											</Select>
@@ -658,6 +702,7 @@ class RegistrationForm extends Component {
 									return (
 										<Alert
 											className="step3-submitErrorAlert"
+											key={"step3-submitErrorAlert" + message}
 											message={message}
 											type="error"
 											showIcon
@@ -687,6 +732,10 @@ class RegistrationForm extends Component {
 						)}
 					</div>
 				</div>
+				<Login
+					onClose={this.closeLoginModal}
+					visible={this.state.loginModalVisible}
+				/>
 			</div>
 		);
 	}

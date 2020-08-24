@@ -49,6 +49,7 @@
 .step2-button {
 	height: 100%;
 	width: 100%;
+	padding: 10% 5%
 }
 
 .step2-buttonTitle {
@@ -84,6 +85,9 @@
 /* tablets and desktop */
 @media only screen and (min-width: 813px) {
 	.reg-container {
+		flex-wrap: nowrap;
+	}
+	.step2-container {
 		flex-wrap: nowrap;
 	}
 }

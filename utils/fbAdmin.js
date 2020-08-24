@@ -26,10 +26,10 @@ function addRegistration(idToken, data, callback) {
 	var subject = data.subject;
 	var course = data.course;
 	var section = data.section;
-	var instructor = data.instructor.toString();
+	var instructor = "" + data.instructor;
 	var seats = data.seats;
 
-	console.log(section);
+	console.log(data);
 
 	//check if missing field
 	if (

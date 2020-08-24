@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Layout } from "antd";
 import "./About.css";
-import Login from "../../components/Login";
 
 class About extends Component {
 	render() {

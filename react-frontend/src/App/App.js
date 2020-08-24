@@ -17,19 +17,6 @@ const { Header, Content, Footer } = Layout;
 class App extends Component {
 	constructor() {
 		super();
-
-		if (Firebase.auth().currentUser != null) {
-			this.state = { isLoggedIn: true };
-		} else {
-			this.state = { isLoggedIn: false };
-		}
-		Firebase.auth().onAuthStateChanged((user) => {
-			if (user) {
-				this.setState({ isLoggedIn: true });
-			} else {
-				this.setState({ isLoggedIn: false });
-			}
-		});
 	}
 
 	render() {
@@ -47,10 +34,8 @@ class App extends Component {
 					</Switch>
 					<Footer style={{ textAlign: "center" }}>
 						<p>
-							BC Classes ©2020 Created by{" "}
-							<a href="https://garytou.com">
-								<ProfilePicture /> <span>Gary Tou</span>
-							</a>
+							BC Classes ©2020. Created by{" "}
+							<a href="https://garytou.com">Gary Tou</a>
 						</p>
 					</Footer>
 				</Layout>

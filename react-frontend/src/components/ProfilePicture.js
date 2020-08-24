@@ -41,6 +41,7 @@ class ProfilePicture extends Component {
 				shape="circle"
 				alt="Profile Picture"
 				src={this.state.photoURL}
+				size={this.props.size}
 			></Avatar>
 		);
 	}

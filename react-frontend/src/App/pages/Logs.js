@@ -179,6 +179,7 @@ class Logs extends Component {
 	changeItem(message, type) {
 		return (
 			<Timeline.Item
+				key={message[1] + message[2]}
 				dot={(function () {
 					if (message[0] === "added") {
 						return <PlusCircleOutlined className="logs-timelineDotAdd" />;
@@ -247,7 +248,7 @@ class Logs extends Component {
 									}
 									dataSource={this.state.data}
 									renderItem={(item) => (
-										<List.Item>
+										<List.Item key={item.time}>
 											<List.Item.Meta
 												className="log-timeTitle"
 												title={item.time}
@@ -276,6 +277,7 @@ class Logs extends Component {
 																})}
 																{topic.length > 3 ? (
 																	<Timeline.Item
+																		key={item.time + topic + "showAll"}
 																		dot={function () {
 																			if (this.state[topic[0][1]]) {
 																				return (
@@ -289,6 +291,7 @@ class Logs extends Component {
 																		onClick={() => {
 																			this.toggleSeeAll(topic[0][1]);
 																		}}
+																		style={{ display: "inline-block" }}
 																	>
 																		<p className="log-seeAll">
 																			{!this.state[topic[0][1]]

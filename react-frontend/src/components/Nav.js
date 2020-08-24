@@ -4,6 +4,7 @@ import { Menu } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import Firebase from "../utils/Firebase";
 import ProfilePicture from "../components/ProfilePicture";
+import Login from "./Login";
 import "./Nav.css";
 
 class Nav extends Component {
@@ -14,11 +15,22 @@ class Nav extends Component {
 
 		this.updateNavCollapse = this.updateNavCollapse.bind(this);
 		this.navToogle = this.navToogle.bind(this);
+		this.accountMenuItem = this.accountMenuItem.bind(this);
+		this.openLoginModal = this.openLoginModal.bind(this);
+		this.closeLoginModal = this.closeLoginModal.bind(this);
 
 		if (this.navCollapseQuery.matches) {
-			this.state = { navCollapse: true, navClosed: true };
+			this.state = {
+				navCollapse: true,
+				navClosed: true,
+				loginModalVisible: false,
+			};
 		} else {
-			this.state = { navCollapse: false, navClosed: true };
+			this.state = {
+				navCollapse: false,
+				navClosed: true,
+				loginModalVisible: false,
+			};
 		}
 	}
 
@@ -56,6 +68,64 @@ class Nav extends Component {
 		}
 	}
 
+	menuItems() {
+		return [
+			<Menu.Item key="home">
+				<Link to={"/"}>Home</Link>
+			</Menu.Item>,
+			<Menu.Item key="logs">
+				<Link to={"/logs"}>Logs</Link>
+			</Menu.Item>,
+			<Menu.Item key="about">
+				<Link to={"/about"}>About</Link>
+			</Menu.Item>,
+			this.accountMenuItem(),
+		];
+	}
+
+	accountMenuItem() {
+		if (this.state.isLoggedIn) {
+			return (
+				<Menu.SubMenu title={<ProfilePicture />} key="acount-loggedIn">
+					<Menu.Item key="settings">
+						<Link to={"/settings"}>Settings</Link>
+					</Menu.Item>
+					<Menu.Divider />
+					<Menu.Item
+						key="logout"
+						onClick={() => {
+							Firebase.auth()
+								.signOut()
+								.then(
+									() => {
+										console.log("Signed Out");
+									},
+									(error) => {
+										console.log("Sign Out Error:\n", error);
+									}
+								);
+						}}
+					>
+						Logout
+					</Menu.Item>
+				</Menu.SubMenu>
+			);
+		} else {
+			return (
+				<Menu.Item key="login" onClick={this.openLoginModal}>
+					Login
+				</Menu.Item>
+			);
+		}
+	}
+
+	openLoginModal() {
+		this.setState({ loginModalVisible: true });
+	}
+	closeLoginModal() {
+		this.setState({ loginModalVisible: false });
+	}
+
 	render() {
 		return (
 			<div className="navBar">
@@ -89,25 +159,9 @@ class Nav extends Component {
 									mode="vertical"
 									// defaultSelectedKeys={["home"]}
 									style={{ float: "right", position: "relative", zIndex: "10" }}
+									selectable={false}
 								>
-									<Menu.Item key="home">
-										<Link to={"/"}>Home</Link>
-									</Menu.Item>
-									<Menu.Item key="logs">
-										<Link to={"/logs"}>Logs</Link>
-									</Menu.Item>
-									<Menu.Item key="about">
-										<Link to={"/about"}>About</Link>
-									</Menu.Item>
-									{this.state.isLoggedIn ? (
-										<Menu.SubMenu title={<ProfilePicture />}>
-											<Menu.Item key="settings">Settings</Menu.Item>
-											<Menu.Divider />
-											<Menu.Item key="logout">Logout</Menu.Item>
-										</Menu.SubMenu>
-									) : (
-										<Menu.Item key="login">Login</Menu.Item>
-									)}
+									{this.menuItems()}
 								</Menu>
 							</div>
 						)}
@@ -118,27 +172,15 @@ class Nav extends Component {
 						mode="horizontal"
 						// defaultSelectedKeys={["home"]}
 						style={{ float: "right" }}
+						selectable={false}
 					>
-						<Menu.Item key="home">
-							<Link to={"/"}>Home</Link>
-						</Menu.Item>
-						<Menu.Item key="logs">
-							<Link to={"/logs"}>Logs</Link>
-						</Menu.Item>
-						<Menu.Item key="about">
-							<Link to={"/about"}>About</Link>
-						</Menu.Item>
-						{this.state.isLoggedIn ? (
-							<Menu.SubMenu title={<ProfilePicture />}>
-								<Menu.Item key="settings">Settings</Menu.Item>
-								<Menu.Divider />
-								<Menu.Item key="logout">Logout</Menu.Item>
-							</Menu.SubMenu>
-						) : (
-							<Menu.Item key="login">Login</Menu.Item>
-						)}
+						{this.menuItems()}
 					</Menu>
 				)}
+				<Login
+					onClose={this.closeLoginModal}
+					visible={this.state.loginModalVisible}
+				/>
 			</div>
 		);
 	}

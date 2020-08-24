@@ -29,7 +29,6 @@ routes.get("/history", function (req, res) {
 
 routes.post("/register", validateAuth, function (req, res) {
 	var idToken = req.currentUser;
-	console.log("\n\nVALID idToken: " + JSON.stringify(idToken) + "\n\n");
 
 	var data = {};
 	data.quarter = req.body.quarter;
