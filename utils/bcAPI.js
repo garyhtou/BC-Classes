@@ -38,15 +38,31 @@ function getQuarters(callback) {
 		}
 		oldData.quarters = data.quarters;
 
-		body.NavigationQuarters.map((quarter) => {
-			var slug = new String(quarter.FriendlyName).replace(/ /g, "");
-			data.quarters[slug] = quarter;
-			if (!data.classes.quarters.hasOwnProperty(slug)) {
-				data.classes.quarters[slug] = {};
+		// DON'T ADD OLD QUARTERS FOR NOW - SPEEDS THINGS UP
+
+		// body.NavigationQuarters.map((quarter) => {
+		// 	var slug = new String(quarter.FriendlyName).replace(/ /g, "");
+		// 	data.quarters[slug] = quarter;
+		// 	if (!data.classes.quarters.hasOwnProperty(slug)) {
+		// 		data.classes.quarters[slug] = {};
+		// 	}
+		// });
+
+		// BEGIN MANUAL ADD QUARTER
+		if (typeof data.quarters.Winter2021 === "undefined") {
+			data.quarters.Winter2021 = {
+				ID: "C013",
+				FriendlyName: "Winter 2021",
+			};
+			if (!data.classes.quarters.hasOwnProperty("Winter2021")) {
+				data.classes.quarters["Winter2021"] = {};
 			}
-		});
+		}
+		// END MANUAL ADD QUARTER
 
 		console.log("\nGOT QUARTERS");
+		console.log(data.quarters);
+		console.log(data.classes.quarters);
 		callback(null, data.quarters);
 	});
 }
