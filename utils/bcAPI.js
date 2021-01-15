@@ -49,13 +49,13 @@ function getQuarters(callback) {
 		// });
 
 		// BEGIN MANUAL ADD QUARTER
-		if (typeof data.quarters.Winter2021 === "undefined") {
-			data.quarters.Winter2021 = {
-				ID: "C013",
-				FriendlyName: "Winter 2021",
+		if (typeof data.quarters.Spring2021 === "undefined") {
+			data.quarters.Spring2021 = {
+				ID: "C014",
+				FriendlyName: "Spring 2021",
 			};
-			if (!data.classes.quarters.hasOwnProperty("Winter2021")) {
-				data.classes.quarters["Winter2021"] = {};
+			if (!data.classes.quarters.hasOwnProperty("Spring2021")) {
+				data.classes.quarters["Spring2021"] = {};
 			}
 		}
 		// END MANUAL ADD QUARTER
