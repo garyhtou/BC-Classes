@@ -38,8 +38,9 @@ function getQuarters(callback) {
 		}
 		oldData.quarters = data.quarters;
 
-		// DON'T ADD OLD QUARTERS FOR NOW - SPEEDS THINGS UP
+		// BEGIN: ONLY ADD TWO NEWEST QUARTER (speeds things up)
 
+		// Original code
 		// body.NavigationQuarters.map((quarter) => {
 		// 	var slug = new String(quarter.FriendlyName).replace(/ /g, "");
 		// 	data.quarters[slug] = quarter;
@@ -48,16 +49,37 @@ function getQuarters(callback) {
 		// 	}
 		// });
 
-		// BEGIN MANUAL ADD QUARTER
-		if (typeof data.quarters.Spring2021 === "undefined") {
-			data.quarters.Spring2021 = {
-				ID: "C014",
-				FriendlyName: "Spring 2021",
-			};
-			if (!data.classes.quarters.hasOwnProperty("Spring2021")) {
-				data.classes.quarters["Spring2021"] = {};
-			}
+		let numNewestQuarters = 2; // Keep track of the last x newest quarters
+		let newestQuarters = [];
+		for (
+			let quarterIndex = 0;
+			quarterIndex < numNewestQuarters;
+			quarterIndex++
+		) {
+			newestQuarters.push(body.NavigationQuarters[quarterIndex]);
 		}
+		newestQuarters.map((quarter) => {
+			if (typeof body.NavigationQuarters[0] !== "undefined") {
+				var slug = new String(quarter.FriendlyName).replace(/ /g, "");
+				data.quarters[slug] = quarter;
+				if (!data.classes.quarters.hasOwnProperty(slug)) {
+					data.classes.quarters[slug] = {};
+				}
+			}
+		});
+
+		// END ONLY ADD TWO NEWEST QUARTER
+
+		// BEGIN MANUAL ADD QUARTER
+		// if (typeof data.quarters.Spring2021 === "undefined") {
+		// 	data.quarters.Spring2021 = {
+		// 		ID: "C014",
+		// 		FriendlyName: "Spring 2021",
+		// 	};
+		// 	if (!data.classes.quarters.hasOwnProperty("Spring2021")) {
+		// 		data.classes.quarters["Spring2021"] = {};
+		// 	}
+		// }
 		// END MANUAL ADD QUARTER
 
 		console.log("\nGOT QUARTERS");
@@ -116,10 +138,6 @@ function getClasses(callback) {
 						}
 
 						quarters[quarterSlug][subjectSlug].Courses = courses;
-
-						// Save data!
-						data.classes.quarters[quarterSlug][subjectSlug] =
-							quarters[quarterSlug][subjectSlug];
 
 						loopSubjectCounter++;
 						if (loopSubjectCounter < subjectSlugs.length) {
