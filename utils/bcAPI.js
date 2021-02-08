@@ -82,9 +82,10 @@ function getQuarters(callback) {
 		// }
 		// END MANUAL ADD QUARTER
 
-		firebase
+		// STORE QUARTERS IN DATABASE
+		fbAdmin.admin
 			.database()
-			.ref("bc-classes/data/quarters")
+			.ref("/data/quarters")
 			.set(data.quarters)
 			.then(() => {
 				console.log("\nGOT QUARTERS");
