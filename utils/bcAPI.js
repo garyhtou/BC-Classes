@@ -157,6 +157,9 @@ function getClasses(callback) {
 								//console.log(JSON.stringify(data.classes));
 
 								// Make sure everything's save before call back and replace removed quarters
+								if (typeof data.classes === "undefined") {
+									data.classes = {};
+								}
 								data.classes.quarters = quarters;
 								console.log("\n  GOT ALL CLASSES");
 								console.log(
