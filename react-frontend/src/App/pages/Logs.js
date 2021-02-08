@@ -72,8 +72,13 @@ class Logs extends Component {
 						for (var topicItem in topicObj) {
 							var topicItemObj = topicObj[topicItem];
 
-							var locationLast = topicItemObj[2][topicItemObj[2].length - 1];
-							if (locationLast === undefined) {
+							var locationLast;
+							if (typeof topicItemObj[2] !== "undefined") {
+								var locationLast = topicItemObj[2][topicItemObj[2].length - 1];
+								if (locationLast === undefined) {
+									locationLast = "avalaible quarters";
+								}
+							} else {
 								locationLast = "avalaible quarters";
 							}
 
