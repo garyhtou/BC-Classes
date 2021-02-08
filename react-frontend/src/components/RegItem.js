@@ -16,7 +16,7 @@ class RegItem extends Component {
 		var location = "";
 		// remove subject if course is in path
 		if (this.props.data.course === "") {
-			location = "Avalaible Quarters";
+			location = "available Quarters";
 		} else if (this.props.data.subject === "") {
 			location = [quarter, this.props.data.course].join(", ");
 		} else if (this.props.data.section !== "") {

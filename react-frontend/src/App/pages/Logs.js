@@ -76,10 +76,10 @@ class Logs extends Component {
 							if (typeof topicItemObj[2] !== "undefined") {
 								var locationLast = topicItemObj[2][topicItemObj[2].length - 1];
 								if (locationLast === undefined) {
-									locationLast = "avalaible quarters";
+									locationLast = "available quarters";
 								}
 							} else {
-								locationLast = "avalaible quarters";
+								locationLast = "available quarters";
 							}
 
 							var location = "";
@@ -98,6 +98,8 @@ class Logs extends Component {
 								locationLast = locListNoSubject[3];
 								locListNoSubject.splice(1, 1);
 								location = locListNoSubject.join(", ");
+							} else if (locationLast == "available quarters") {
+								location = locationLast;
 							} else {
 								var locListNoSubject = [...topicItemObj[2]];
 								locListNoSubject.splice(1, 1);

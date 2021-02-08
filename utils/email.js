@@ -37,7 +37,7 @@ async function queueEmailChanges(changes) {
 
 			var locationLast = change[2][change[2].length - 1];
 			if (locationLast == undefined) {
-				locationLast = "avalaible quarters";
+				locationLast = "available quarters";
 			}
 
 			var location = "";
