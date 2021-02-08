@@ -82,10 +82,16 @@ function getQuarters(callback) {
 		// }
 		// END MANUAL ADD QUARTER
 
-		console.log("\nGOT QUARTERS");
-		console.log(data.quarters);
-		console.log(data.classes.quarters);
-		callback(null, data.quarters);
+		firebase
+			.database()
+			.ref("bc-classes/data/quarters")
+			.set(data.quarters)
+			.then(() => {
+				console.log("\nGOT QUARTERS");
+				console.log(data.quarters);
+				console.log(data.classes.quarters);
+				callback(null, data.quarters);
+			});
 	});
 }
 
