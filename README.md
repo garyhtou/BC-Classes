@@ -2,8 +2,6 @@
 
 Get notified when Bellevue College classes change
 
-visit `"/ping"` to have Node.js self ping to prevent shutdown with no traffic (due to shared hosting with Phusion Passenger).
-
 ## ENV
 
 ```
@@ -13,3 +11,8 @@ EMAIL_USER=
 EMAIL_PASS=
 EMAIL_FROM=
 ```
+
+## TODO
+
+- Paginate data from Firebase on Logs page (currently pulling ALL changes)
+- Allow users to remove tracking

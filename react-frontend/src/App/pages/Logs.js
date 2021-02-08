@@ -239,7 +239,7 @@ class Logs extends Component {
 									footer={
 										<>
 											<p>
-												Updated once per hour.
+												Updated at least once per day.
 												<br />
 												Displayed in your local time (
 												{Intl.DateTimeFormat().resolvedOptions().timeZone})
