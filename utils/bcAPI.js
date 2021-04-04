@@ -41,24 +41,7 @@ function getQuarters(callback) {
 		// BEGIN: ONLY ADD TWO NEWEST QUARTER (speeds things up)
 
 		// Original code
-		// body.NavigationQuarters.map((quarter) => {
-		// 	var slug = new String(quarter.FriendlyName).replace(/ /g, "");
-		// 	data.quarters[slug] = quarter;
-		// 	if (!data.classes.quarters.hasOwnProperty(slug)) {
-		// 		data.classes.quarters[slug] = {};
-		// 	}
-		// });
-
-		let numNewestQuarters = 2; // Keep track of the last x newest quarters
-		let newestQuarters = [];
-		for (
-			let quarterIndex = 0;
-			quarterIndex < numNewestQuarters;
-			quarterIndex++
-		) {
-			newestQuarters.push(body.NavigationQuarters[quarterIndex]);
-		}
-		newestQuarters.map((quarter) => {
+		body.NavigationQuarters.map((quarter) => {
 			if (typeof body.NavigationQuarters[0] !== "undefined") {
 				var slug = new String(quarter.FriendlyName).replace(/ /g, "");
 				data.quarters[slug] = quarter;
@@ -67,6 +50,25 @@ function getQuarters(callback) {
 				}
 			}
 		});
+
+		// let numNewestQuarters = 2; // Keep track of the last x newest quarters
+		// let newestQuarters = [];
+		// for (
+		// 	let quarterIndex = 0;
+		// 	quarterIndex < numNewestQuarters;
+		// 	quarterIndex++
+		// ) {
+		// 	newestQuarters.push(body.NavigationQuarters[quarterIndex]);
+		// }
+		// newestQuarters.map((quarter) => {
+		// 	if (typeof body.NavigationQuarters[0] !== "undefined") {
+		// 		var slug = new String(quarter.FriendlyName).replace(/ /g, "");
+		// 		data.quarters[slug] = quarter;
+		// 		if (!data.classes.quarters.hasOwnProperty(slug)) {
+		// 			data.classes.quarters[slug] = {};
+		// 		}
+		// 	}
+		// });
 
 		// END ONLY ADD TWO NEWEST QUARTER
 
